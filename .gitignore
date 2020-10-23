@@ -1,0 +1,6 @@
+.vscode
+build/
+Tracy-release
+Sandbox/
+_obsolete/
+Tests/

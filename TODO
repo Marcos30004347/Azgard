@@ -1,0 +1,4 @@
+Add better CMake building process with support for release and debug builds (currrently only debug)
+Add better handling of tracy profiler when version 1.0 comes out
+Add building support for Browser(Emscripten), Android, Windows, Macos, IOS
+Make Debugger log messages to window screen
