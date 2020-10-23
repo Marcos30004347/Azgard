@@ -1,5 +1,5 @@
-#ifndef AZG_DEBUGGER
-#define AZG_DEBUGGER
+#ifndef AZGARD_DEBUGGER
+#define AZGARD_DEBUGGER
 
 #ifdef TRACY_ENABLE
 #include "tracy/Tracy.hpp"
@@ -62,6 +62,7 @@ public:
 
 
 #ifdef AZG_DEBUG_BUILD
+
 #define AZG_DEBUGGER_SET_THREAD_NAME(name) Azgard::Debugger::setThreadName(name);
 #define AZG_DEBUGGER_GET_THREAD_NAME(id) Azgard::Debugger::getThreadName(id);
 #define AZG_DEBUGGER_SECONDARY_FRAME_START(name) Azgard::Debugger::reportSecondaryFrameStart(name);
@@ -86,7 +87,8 @@ public:
 #define AZG_DEBUG_SCOPE_NAMED(name)
 #define AZG_DEBUG_SCOPE
 
-#error asdadsdasd
+#endif // TRACY_ENABLE
+
 #if defined(_MSC_VER)
     extern void __cdecl __debugbreak(void);
     #define AZG_TRIGGER_BREAKPOINT __debugbreak()
@@ -102,11 +104,8 @@ public:
     #define AZG_TRIGGER_BREAKPOINT
 #endif
 
+#else // AZG_DEBUG_BUILD
 
-
-#endif
-
-#else
 
 #define AZG_DEBUG_SCOPE_NAMED(name)
 #define AZG_DEBUG_SCOPE
@@ -120,6 +119,6 @@ public:
 #define AZG_DEBUG_FREE(prt)
 #define AZG_TRIGGER_BREAKPOINT
 
-#endif
+#endif // AZG_DEBUG_BUILD
 
 #endif

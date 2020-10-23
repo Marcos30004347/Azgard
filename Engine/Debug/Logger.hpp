@@ -79,13 +79,13 @@ public:
 }
 
 #ifdef AZG_DEBUG_BUILD
-#define AZGARD_LOG(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZGARD_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZGARD_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #else
-#define AZGARD_LOG(chanel, fmt, ...) 
-#define AZGARD_LOG_ERROR(chanel, fmt, ...)
-#define AZGARD_LOG_WARNING(chanel, fmt, ...)
+#define AZG_LOG(chanel, fmt, ...) 
+#define AZG_LOG_ERROR(chanel, fmt, ...)
+#define AZG_LOG_WARNING(chanel, fmt, ...)
 #endif
 
 

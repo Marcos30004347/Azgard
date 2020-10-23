@@ -1,15 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
+include(cmake/set_target_option.cmake)
 
 project(azgard)
 
-add_definitions(-DAZG_DEBUG_BUILD)
-
+#Azgard compile options
 option(AZG_DEBUG_BUILD "Azgard debug mode" ON)
+option(AZG_USE_STANDART_MATH "Azgard should use standart c math library" ON)
+
+if(AZG_DEBUG_BUILD)
+add_compile_options(
+  "-Wall" "-Wpedantic" "-Wextra" "-fexceptions"
+  "$<$<CONFIG:DEBUG>:-O0;-g3;-ggdb>"
+)
+endif()
 
 include(ThirdParty/glew.cmake)
 include(ThirdParty/sdl2.cmake)
 include(ThirdParty/opengl.cmake)
-include(ThirdParty/jobin.cmake)
 include(ThirdParty/bitsery.cmake)
 include(ThirdParty/crc.cmake)
 include(ThirdParty/rapidjson.cmake)
@@ -52,18 +59,13 @@ Engine/Memory/Memory.cpp
 Engine/Memory/MemoryPool.cpp
 )
 
-if(AZG_DEBUG_BUILD)
-message(STATUS "AZG_DEBUG_BUILD: ON")
-target_compile_definitions(azgard PUBLIC AZG_DEBUG_BUILD)
-endif()
-
-target_include_directories(azgard PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/Engine)
+set_target_option(azgard AZG_DEBUG_BUILD)
+set_target_option(azgard AZG_USE_STANDART_MATH)
 
 # Link Third Party dependencies
 link_glew_on_target(azgard)
 link_opengl_on_target(azgard)
 link_sdl2_on_target(azgard)
-link_jobin_on_target(azgard)
 link_bitsery_on_target(azgard)
 link_crc_on_target(azgard)
 link_rapidjson_on_target(azgard)

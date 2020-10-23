@@ -1,44 +1,59 @@
 #include <cmath>
 // TODO: add cmath implementantion
 
+#define AZG_USE_STANDART_MATH 1
+
 namespace Azgard {
 
 inline float fmaf(float a, float b, float c) {
-    return (a*b) + c;
+  #ifdef AZG_USE_STANDART_MATH
+  return std::fmaf(a,b,c);
+  #else
+  return (a*b) + c;
+  #endif
 }
 
 float log2(float x)
 {
-    // a*(x-1)^2 + b*(x-1) approximates log2(x) when 0.75 <= x < 1.5
-    const float a =  -.6296735;
-    const float b =   1.466967;
-    float signif, fexp;
-    int exp;
-    float lg2;
-    union { float f; unsigned int i; } ux1, ux2;
-    int greater;
-    ux1.f = x;
-    exp = (ux1.i & 0x7F800000) >> 23; 
+  #ifdef AZG_USE_STANDART_MATH
+  return std::log(x);
+  #else
+  // a*(x-1)^2 + b*(x-1) approximates log2(x) when 0.75 <= x < 1.5
+  const float a =  -.6296735;
+  const float b =   1.466967;
+  float signif, fexp;
+  int exp;
+  float lg2;
+  union { float f; unsigned int i; } ux1, ux2;
+  int greater;
+  ux1.f = x;
+  exp = (ux1.i & 0x7F800000) >> 23; 
 
-    greater = ux1.i & 0x00400000;
-    if (greater) {
-        ux2.i = (ux1.i & 0x007FFFFF) | 0x3f000000;
-        signif = ux2.f;
-        fexp = exp - 126;
-        signif = signif - 1.0;
-        lg2 = fexp + a*signif*signif + b*signif;
-    } else {
-        ux2.i = (ux1.i & 0x007FFFFF) | 0x3f800000;
-        signif = ux2.f;
-        fexp = exp - 127;
-        signif = signif - 1.0;
-        lg2 = fexp + a*signif*signif + b*signif;
-    }
-    return(lg2);
+  greater = ux1.i & 0x00400000;
+  if (greater) {
+      ux2.i = (ux1.i & 0x007FFFFF) | 0x3f000000;
+      signif = ux2.f;
+      fexp = exp - 126;
+      signif = signif - 1.0;
+      lg2 = fexp + a*signif*signif + b*signif;
+  } else {
+      ux2.i = (ux1.i & 0x007FFFFF) | 0x3f800000;
+      signif = ux2.f;
+      fexp = exp - 127;
+      signif = signif - 1.0;
+      lg2 = fexp + a*signif*signif + b*signif;
+  }
+  return(lg2);
+  #endif
+
 }
 
 float log(float v) {
+  #ifdef AZG_USE_STANDART_MATH
   return std::log(v);
+  #else 
+  #error log avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #endif
 }
 
 float lerp(float a, float b, float w) {
@@ -54,34 +69,20 @@ float min(float a, float b) {
 }
 
 float exp2(float x) {
+  #ifdef AZG_USE_STANDART_MATH
   return std::exp2(x);
+  #else 
+  #error exp2 avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #endif
 }
 
-double exp_64(const double x) noexcept {
-    // Based on Schraudolph 1999, A Fast, Compact Approximation of the Exponential Function.
-    // - Adapted to use 64-bit integer; reduces staircase effect.
-    // - Valid for x in approx range (-700, 700).
-    union{double d_; long i_;} uid; //This could be moved to the thread scope.
-    //BBBD(sizeof(uid)!=8)
-    uid.i_ = long(double((long(1) << 52) / log(2.0)) * x + double((long(1) << 52) * 1023 - 0)); //c=0 for 1.0 at zero.
-    return uid.d_;
-}
 
-double fast_exp(const double x) noexcept {
-    // Based on Schraudolph 1999, A Fast, Compact Approximation of the Exponential Function.
-    // - See the improved fast_exp_64 implementation below!
-    // - Valid for x in approx range (-700, 700).
-    union{double d_; int i_[2];} uid; //This could be moved to the thread scope.
-    //BBBD(sizeof(uid)!=8)
-    uid.i_[0] = 0;
-    uid.i_[1] = int(double((1<<20) / log(2.0)) * x + double((1<<20) * 1023 - 0)); //c=0 for 1.0 at zero.
-    return uid.d_;
-}
-
-float exp(float a) {
-  return std::exp(a);
-  // return exp_64(a);
-  // return std::exp(a);
+float exp(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::exp(x);
+  #else 
+  #error exp avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #endif
 }
 
 long long binpow(long long a, long long b) {
@@ -94,55 +95,79 @@ long long binpow(long long a, long long b) {
     }
     return res;
 }
-float abs(float a) {
+
+float abs(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::abs(x);
+  #else 
   return max(-a, a);
+  #endif
 }
 
 float pow(float x, float y) {
-    return exp(x * log(y));
+  #ifdef AZG_USE_STANDART_MATH
+  return std::pow(x, y);
+  #else 
+  return exp(x * log(y));
+  #endif
 }
 
 float rsqrt(float a) {
+
     return pow(a, -0.5);
 }
 
-float sqrt(float a)
-{
-    return 1.0 / rsqrt(a);
+float sqrt(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::sqrt(x);
+  #else 
+  return 1.0 / rsqrt(a);
+  #endif
 }
 
 float acos(float x) {
-    float negate = float(x < 0);
-    x = abs(x);
-    float ret = -0.0187293;
-    ret = ret * x;
-    ret = ret + 0.0742610;
-    ret = ret * x;
-    ret = ret - 0.2121144;
-    ret = ret * x;
-    ret = ret + 1.5707288;
-    ret = ret * sqrt(1.0-x);
-    ret = ret - 2 * negate * ret;
-    return negate * 3.14159265358979 + ret;
+  #ifdef AZG_USE_STANDART_MATH
+  return std::acos(x);
+  #else
+  float negate = float(x < 0);
+  x = abs(x);
+  float ret = -0.0187293;
+  ret = ret * x;
+  ret = ret + 0.0742610;
+  ret = ret * x;
+  ret = ret - 0.2121144;
+  ret = ret * x;
+  ret = ret + 1.5707288;
+  ret = ret * sqrt(1.0-x);
+  ret = ret - 2 * negate * ret;
+  return negate * 3.14159265358979 + ret;
+  #endif
+
 }
 
 float asin(float x) {
-    float negate = float(x < 0);
-    x = abs(x);
-    float ret = -0.0187293;
-    ret *= x;
-    ret += 0.0742610;
-    ret *= x;
-    ret -= 0.2121144;
-    ret *= x;
-    ret += 1.5707288;
-    ret = 3.14159265358979*0.5 - sqrt(1.0 - x)*ret;
-    return ret - 2 * negate * ret;
+  #ifdef AZG_USE_STANDART_MATH
+  return std::asin(x);
+  #else
+  float negate = float(x < 0);
+  x = abs(x);
+  float ret = -0.0187293;
+  ret *= x;
+  ret += 0.0742610;
+  ret *= x;
+  ret -= 0.2121144;
+  ret *= x;
+  ret += 1.5707288;
+  ret = 3.14159265358979*0.5 - sqrt(1.0 - x)*ret;
+  return ret - 2 * negate * ret;
+  #endif
 }
 
 
-float atan2(float y, float x)
-{
+float atan2(float x, float y) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::atan2(x, y);
+  #else
   float t0, t1, t2, t3, t4;
 
   t3 = abs(x);
@@ -166,10 +191,17 @@ float atan2(float y, float x)
   t3 = (y < 0) ? -t3 : t3;
 
   return t3;
+
+  #endif
+
 }
 
 float atan(float x) {
-    return atan2(x, float(1));
+  #ifdef AZG_USE_STANDART_MATH
+  return std::atan(x);
+  #else
+  return atan2(x, float(1));
+  #endif
 }
 
 
@@ -208,37 +240,51 @@ int bitfieldReverse(int x)
   return res;
 }
 
-float frac(float v) {
-   return v - (long)v;
+float frac(float x) {
+  return x - (long)x;
 }
 
-int floor(float v) {
-    return static_cast<int>(v - frac(v));
+int floor(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::floor(x);
+  #else
+  return static_cast<int>(x - frac(x));
+  #endif
 }
 
 // Returns the ceiling or smallest integer not less than a scalar or each vector component.
-int ceil(float v)
-{
-  return -floor(-v);
+int ceil(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::ceil(x);
+  #else
+  return -floor(-x);
+  #endif
 }
 
 // Clamps x between a and b
-float clamp(float x, float a, float b)
-{
+float clamp(float x, float a, float b) {
   return max(a, min(b, x));
 }
 
 float cosh(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::cosh(x);
+  #else
   return 0.5 * (exp(x)+exp(-x));
+  #endif
 }
 
 float cos(float x) noexcept {
-    constexpr float tp = 1./(3.141592653589793);
-    x *= tp;
-    x -= float(.25) + floor(x + float(.25));
-    x *= float(16.) * (abs(x) - float(.5));
-    x += float(.225) * x * (abs(x) - float(1.));
-    return x;
+  #ifdef AZG_USE_STANDART_MATH
+  return std::cos(x);
+  #else
+  constexpr float tp = 1./(3.141592653589793);
+  x *= tp;
+  x -= float(.25) + floor(x + float(.25));
+  x *= float(16.) * (abs(x) - float(.5));
+  x += float(.225) * x * (abs(x) - float(1.));
+  return x;
+  #endif
 }
 
 // Returns the scalar or vector converted from radians to degrees.
@@ -246,50 +292,68 @@ float degrees(float a) {
   return 57.29577951 * a;
 }
 
-float fmod(float a, float b)
-{
+float fmod(float a, float b) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::fmod(a, b);
+  #else
   float c = frac(abs(a/b))*abs(b);
   return (a < 0) ? -c : c;   /* if ( a < 0 ) c = 0-c */
+  #endif
 }
 
 
-float sign(float x) {
-  return (x > 0) - (x < 0);
+bool sign(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::signbit(x);
+  #else
+  return ((x > 0) - (x < 0)) != -1;
+  #endif
 }
 
-float sinh(float x)
-{
+float sinh(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::sinh(x);
+  #else
   return 0.5 * (exp(x)-exp(-x));
+  #endif
 }
 
 double sin(double x) {
-    return cos(x - 1.570796326794897);
+  #ifdef AZG_USE_STANDART_MATH
+  return std::sin(x);
+  #else
+  return cos(x - 1.570796326794897);
+  #endif
 }
 
-float saturate(float x)
-{
+float saturate(float x) {
   return max(0, min(1, x));
 }
 
-float smoothstep(float a, float b, float x)
-{
+float smoothstep(float a, float b, float x) {
     float t = saturate((x - a)/(b - a));
     return t*t*(3.0 - (2.0*t));
 }
 
-float step(float a, float x)
-{
+float step(float a, float x) {
   return x >= a;
 }
 
-float tanh(float x)
-{
+float tanh(float x) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::tanh(x);
+  #else
   float exp2x = exp(2*x);
   return (exp2x - 1) / (exp2x + 1);
+  #endif
 }
 
 float tan(float a) {
+  #ifdef AZG_USE_STANDART_MATH
+  return std::tan(a);
+  #else
   return sin(a)/cos(a);
+  #endif
 }
 
 }

@@ -1,6 +1,6 @@
 set(CMAKE_CXX_STANDARD 11)
 
-option(TRACY_ENABLE "Profiling is enabled" ON)
+option(TRACY_ENABLE "Profiling is enabled" OFF)
 option(TRACY_ON_DEMAND "Profiling enabled on demand" ON)
 option(TRACY_NO_EXIT "Client executable does not exit until all profile data is sent to server" OFF)
 option(TRACY_NO_BROADCAST "Disable client discovery by broadcast to local network" OFF)
@@ -19,13 +19,17 @@ message(STATUS "${OPTION}: OFF")
 endif()
 endmacro()
 
+if(AZG_DEBUG_BUILD)
+set(TRACY_ENABLE OPTION ON)
+endif()
+
 set_option(TRACY_ENABLE)
 set_option(TRACY_ON_DEMAND)
 set_option(TRACY_NO_EXIT)
 set_option(TRACY_NO_BROADCAST)
 set_option(TRACY_NO_CODE_TRANSFER)
 
-if(NOT TRACY_PORT)
+if(NOT AZG_DEBUG_PORT)
 set(TRACY_PORT 8086)
 endif()
 

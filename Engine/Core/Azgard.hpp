@@ -93,7 +93,7 @@ constexpr typename removeReference<T>::type&& move(T&& v) noexcept {
 void verifyAndLog(bool expression, const char* error_message) {
 #ifdef AZG_DEBUG_BUILD
     if(expression) {
-        AZGARD_LOG_ERROR(LogChannel::CORE_CHANNEL, error_message);
+        AZG_LOG_ERROR(LogChannel::CORE_CHANNEL, error_message);
     }
 #endif
 }
