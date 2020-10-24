@@ -1,9 +1,12 @@
 #include "Logger.hpp"
 #include "Debugger.hpp"
+#include "Library/Time.hpp"
 
 #include <iostream>
 #include <stdio.h>
 #include <cstdarg>
+
+#define AZGARD_DEBUG_BUILD
 
 /**
 Black        0;30     Dark Gray     1;30
@@ -33,13 +36,14 @@ Azgard::Thread* Logger::logger_thread = nullptr;
 LogMessage* Logger::tail = nullptr;
 LogMessage* Logger::top = nullptr;
 
-Atomic<bool> Logger::shouldLoggerLog;
-Atomic<unsigned int> Logger::pendingMessages;
+bool Logger::shouldLoggerLog = true;
+unsigned int Logger::pendingMessages = 0;
 
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
     #if defined(AZGARD_DEBUG_BUILD)
+    Logger::message_lock.lock();
 
-    Logger::pendingMessages.compareExchangeStrong(Logger::pendingMessages.load(), Logger::pendingMessages.load() + 1);
+    Logger::pendingMessages++;
 
     va_list arg;
     va_start (arg, fmt);
@@ -52,19 +56,18 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     message->message = buffer;
     message->next = nullptr;
     message->parent = Logger::tail;
-    message->time = 0; // @TODO: ADD MESSAGE TIME
+    message->time = Time::getMillisecondsSinseEpoch();
     message->chanel = chanel;
     message->size = size;
     message->type = type;
 
-    Logger::message_lock.lock();
 
     if(Logger::tail) Logger::tail->next = message;
+    else if(!Logger::top) {
+        Logger::top = message;
+        Logger::tail = message;
+    }
 
-    if(!Logger::top) Logger::top = message;
-    else Logger::tail = message;
-
-    Logger::message_lock.unlock();
 
     // #if defined(TRACY_ENABLE)
     // TracyMessage(buffer, size);
@@ -72,6 +75,7 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
 
     va_end (arg);
 
+    Logger::message_lock.unlock();
     #endif
 }
 
@@ -83,8 +87,8 @@ void Logger::run(void *data) {
     LogMessage* tmp = nullptr;
     const char* color = defaultForegroundColor();
 
-    while(Logger::shouldLoggerLog.load()) {
-        while(!Logger::top && Logger::shouldLoggerLog.load()) Azgard::Thread::thisThread::yield();
+    while(Logger::shouldLoggerLog > 0) {
+        while(!Logger::top && (Logger::shouldLoggerLog > 0)) Azgard::Thread::thisThread::yield();
 
         while(Logger::top) {
             AZG_DEBUG_SCOPE_NAMED("log message")
@@ -106,19 +110,36 @@ void Logger::run(void *data) {
                 color = defaultForegroundColor();
                 break;
             }
+
+            Date date = Time::getDate(Logger::top->time);
+
+            std::cout <<
+            defaultForegroundColor() <<
+            "[" <<
+            LogChannelNames[Logger::top->chanel] <<
+            " " <<
+            date.hour <<
+            ":" <<
+            date.minutes <<
+            ":" <<
+            date.seconds <<
+            "]: " <<
+            color <<
+            Logger::top->message <<
+            defaultForegroundColor() <<
+            std::endl;
         
-            std::cout << color << "[" << LogChannelNames[Logger::top->chanel] << " - " << Logger::top->time << "]: " << defaultForegroundColor() << Logger::top->message << std::endl;
-            
-            tmp = Logger::top->next;
+            if(Logger::top->next != Logger::top) tmp = Logger::top->next;
+            else tmp = nullptr;
         
             delete Logger::top;
         
             Logger::top  = tmp;
 
-            Logger::pendingMessages.compareExchangeStrong(Logger::pendingMessages.load(), Logger::pendingMessages.load() - 1);
+            Logger::pendingMessages--;
         
             Logger::message_lock.unlock();
-            if(Logger::shouldLoggerLog.load()) {
+            if(Logger::shouldLoggerLog) {
                break; 
             }
         }
@@ -130,15 +151,19 @@ void Logger::run(void *data) {
 
 void Logger::startUp(){
     #if defined(AZGARD_DEBUG_BUILD)
-    Logger::shouldLoggerLog.store(true);
+    Logger::message_lock.lock();
+    Logger::shouldLoggerLog = true;
     Logger::logger_thread = new Azgard::Thread(Logger::run, nullptr);
+    Logger::message_lock.unlock();
     #endif
 
 }
 
 void Logger::stopLoggerThread() {
     #if defined(AZGARD_DEBUG_BUILD)
-    Logger::shouldLoggerLog.store(false);
+    Logger::message_lock.lock();
+    Logger::shouldLoggerLog = false;
+    Logger::message_lock.unlock();
     #endif
 
 }
@@ -146,7 +171,7 @@ void Logger::stopLoggerThread() {
 void Logger::shutDown(bool force) {
     #if defined(AZGARD_DEBUG_BUILD)
 
-    while(force && Logger::pendingMessages.load()) {} // Wait untial all log messages have been logged
+    while(force && Logger::pendingMessages) {} // Wait untial all log messages have been logged
 
     Logger::stopLoggerThread();
     Logger::logger_thread->join();

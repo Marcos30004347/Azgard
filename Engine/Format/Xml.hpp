@@ -25,7 +25,7 @@ public:
     AZG_API const char* name();
 };
 
-AZG_API enum XmlNodeType {
+enum XmlNodeType {
     cdata = rapidxml::node_type::node_cdata,
     comment = rapidxml::node_type::node_comment,
     data = rapidxml::node_type::node_data,

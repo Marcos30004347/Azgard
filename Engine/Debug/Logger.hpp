@@ -46,7 +46,7 @@ enum LogMessageType {
 class LogMessage {
 public:
     char* message = nullptr;
-    unsigned int time;
+    long long time;
     unsigned int size;
     LogMessageType type;
     LogChannel chanel;
@@ -58,8 +58,8 @@ public:
 };
 
 class Logger {
-    static Atomic<bool> shouldLoggerLog;
-    static Atomic<unsigned int> pendingMessages;
+    static bool shouldLoggerLog;
+    static unsigned int pendingMessages;
 
     static LogMessage* tail;
     static LogMessage* top;
