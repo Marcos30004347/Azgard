@@ -1,12 +1,12 @@
 #include <cmath>
 // TODO: add cmath implementantion
 
-#define AZG_USE_STANDART_MATH 1
+#define AZGARD_USE_STANDART_MATH 1
 
 namespace Azgard {
 
 inline float fmaf(float a, float b, float c) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::fmaf(a,b,c);
   #else
   return (a*b) + c;
@@ -15,7 +15,7 @@ inline float fmaf(float a, float b, float c) {
 
 float log2(float x)
 {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::log(x);
   #else
   // a*(x-1)^2 + b*(x-1) approximates log2(x) when 0.75 <= x < 1.5
@@ -49,10 +49,10 @@ float log2(float x)
 }
 
 float log(float v) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::log(v);
   #else 
-  #error log avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #error log avaliable only as standart, try compile with AZGARD_USE_STANDART_MATH defined.
   #endif
 }
 
@@ -69,19 +69,19 @@ float min(float a, float b) {
 }
 
 float exp2(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::exp2(x);
   #else 
-  #error exp2 avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #error exp2 avaliable only as standart, try compile with AZGARD_USE_STANDART_MATH defined.
   #endif
 }
 
 
 float exp(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::exp(x);
   #else 
-  #error exp avaliable only as standart, try compile with AZG_USE_STANDART_MATH defined.
+  #error exp avaliable only as standart, try compile with AZGARD_USE_STANDART_MATH defined.
   #endif
 }
 
@@ -97,7 +97,7 @@ long long binpow(long long a, long long b) {
 }
 
 float abs(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::abs(x);
   #else 
   return max(-a, a);
@@ -105,7 +105,7 @@ float abs(float x) {
 }
 
 float pow(float x, float y) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::pow(x, y);
   #else 
   return exp(x * log(y));
@@ -118,7 +118,7 @@ float rsqrt(float a) {
 }
 
 float sqrt(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::sqrt(x);
   #else 
   return 1.0 / rsqrt(a);
@@ -126,7 +126,7 @@ float sqrt(float x) {
 }
 
 float acos(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::acos(x);
   #else
   float negate = float(x < 0);
@@ -146,7 +146,7 @@ float acos(float x) {
 }
 
 float asin(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::asin(x);
   #else
   float negate = float(x < 0);
@@ -165,7 +165,7 @@ float asin(float x) {
 
 
 float atan2(float x, float y) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::atan2(x, y);
   #else
   float t0, t1, t2, t3, t4;
@@ -197,7 +197,7 @@ float atan2(float x, float y) {
 }
 
 float atan(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::atan(x);
   #else
   return atan2(x, float(1));
@@ -245,7 +245,7 @@ float frac(float x) {
 }
 
 int floor(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::floor(x);
   #else
   return static_cast<int>(x - frac(x));
@@ -254,7 +254,7 @@ int floor(float x) {
 
 // Returns the ceiling or smallest integer not less than a scalar or each vector component.
 int ceil(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::ceil(x);
   #else
   return -floor(-x);
@@ -267,7 +267,7 @@ float clamp(float x, float a, float b) {
 }
 
 float cosh(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::cosh(x);
   #else
   return 0.5 * (exp(x)+exp(-x));
@@ -275,7 +275,7 @@ float cosh(float x) {
 }
 
 float cos(float x) noexcept {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::cos(x);
   #else
   constexpr float tp = 1./(3.141592653589793);
@@ -293,7 +293,7 @@ float degrees(float a) {
 }
 
 float fmod(float a, float b) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::fmod(a, b);
   #else
   float c = frac(abs(a/b))*abs(b);
@@ -303,7 +303,7 @@ float fmod(float a, float b) {
 
 
 bool sign(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::signbit(x);
   #else
   return ((x > 0) - (x < 0)) != -1;
@@ -311,7 +311,7 @@ bool sign(float x) {
 }
 
 float sinh(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::sinh(x);
   #else
   return 0.5 * (exp(x)-exp(-x));
@@ -319,7 +319,7 @@ float sinh(float x) {
 }
 
 double sin(double x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::sin(x);
   #else
   return cos(x - 1.570796326794897);
@@ -340,7 +340,7 @@ float step(float a, float x) {
 }
 
 float tanh(float x) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::tanh(x);
   #else
   float exp2x = exp(2*x);
@@ -349,7 +349,7 @@ float tanh(float x) {
 }
 
 float tan(float a) {
-  #ifdef AZG_USE_STANDART_MATH
+  #ifdef AZGARD_USE_STANDART_MATH
   return std::tan(a);
   #else
   return sin(a)/cos(a);

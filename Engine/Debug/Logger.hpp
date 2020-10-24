@@ -3,7 +3,6 @@
 
 #include "Library/SpinLock.hpp"
 #include "Library/Thread.hpp"
-// #include "Library/Singleton.hpp"
 
 namespace Azgard {
 
@@ -78,10 +77,10 @@ public:
 
 }
 
-#ifdef AZG_DEBUG_BUILD
-#define AZG_LOG(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#ifdef AZGARD_DEBUG_BUILD
+#define AZG_LOG(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #else
 #define AZG_LOG(chanel, fmt, ...) 
 #define AZG_LOG_ERROR(chanel, fmt, ...)

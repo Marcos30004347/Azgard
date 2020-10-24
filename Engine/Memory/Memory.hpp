@@ -1,3 +1,6 @@
+#ifndef AZGARD_MEMORY
+#define AZGARD_MEMORY
+
 namespace Azgard {
 
 /**
@@ -28,3 +31,19 @@ void* setBytesTo(void* ptr, int value, unsigned long count);
 
 }
 
+/**
+ * @brief New operator
+ * 
+ * @param size Size of memory to allocate.
+ * @return voidless ptr to allocated memory.
+ */
+void* operator new(long unsigned int size);
+
+/**
+ * @brief Celete operator
+ * 
+ * @param ptr ptr to delete
+ */
+void operator delete(void *ptr) noexcept;
+
+#endif

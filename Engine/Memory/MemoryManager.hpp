@@ -1,25 +1,27 @@
-#ifndef AZGARD_MEMORY
-#define AZGARD_MEMORY
+#ifndef AZGARD_MEMORY_MANAGER
+#define AZGARD_MEMORY_MANAGER
 
+#include "Core/Api.hpp"
 #include "Memory.hpp"
 
-/**
- * @brief New operator
- * 
- * @param size Size of memory to allocate.
- * @return voidless ptr to allocated memory.
- */
-void* operator new(long unsigned int size) {
-    return Azgard::allocBytes(size);
+class MemoryManager {
+public:
+    AZG_API static void* mallocFromGlobalPool(long unsigned int size);
+    AZG_API static void freeInGlobalPool(void* ptr);
+
+    AZG_API static void startUp();
+    AZG_API static void shutDown();
+};
+
+
+#define AZGARD_OVERLOAD_NEW \
+void* operator new(long unsigned int size) { \
+    return MemoryManager::mallocFromGlobalPool(size); \
 }
 
-/**
- * @brief Celete operator
- * 
- * @param ptr ptr to delete
- */
-void operator delete(void *ptr) noexcept {
-    return Azgard::freeBytes(ptr);
+#define AZGARD_OVERLOAD_DELETE \
+void operator new(void* ptr) { \
+    return MemoryManager::freeInGlobalPool(ptr); \
 }
 
 

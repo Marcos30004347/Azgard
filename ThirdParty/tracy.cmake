@@ -19,7 +19,7 @@ message(STATUS "${OPTION}: OFF")
 endif()
 endmacro()
 
-if(AZG_DEBUG_BUILD)
+if(AZGARD_DEBUG_BUILD)
 set(TRACY_ENABLE OPTION ON)
 endif()
 

@@ -34,7 +34,7 @@ LogMessage* Logger::tail = nullptr;
 LogMessage* Logger::top = nullptr;
 
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
-    #if defined(AZG_DEBUG_BUILD)
+    #if defined(AZGARD_DEBUG_BUILD)
 
     va_list arg;
     va_start (arg, fmt);

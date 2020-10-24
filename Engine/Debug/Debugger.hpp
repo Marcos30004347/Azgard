@@ -61,7 +61,7 @@ public:
 }
 
 
-#ifdef AZG_DEBUG_BUILD
+#ifdef AZGARD_DEBUG_BUILD
 
 #define AZG_DEBUGGER_SET_THREAD_NAME(name) Azgard::Debugger::setThreadName(name);
 #define AZG_DEBUGGER_GET_THREAD_NAME(id) Azgard::Debugger::getThreadName(id);
@@ -104,7 +104,7 @@ public:
     #define AZG_TRIGGER_BREAKPOINT
 #endif
 
-#else // AZG_DEBUG_BUILD
+#else // AZGARD_DEBUG_BUILD
 
 
 #define AZG_DEBUG_SCOPE_NAMED(name)
@@ -119,6 +119,6 @@ public:
 #define AZG_DEBUG_FREE(prt)
 #define AZG_TRIGGER_BREAKPOINT
 
-#endif // AZG_DEBUG_BUILD
+#endif // AZGARD_DEBUG_BUILD
 
 #endif
