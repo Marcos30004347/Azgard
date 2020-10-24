@@ -68,6 +68,14 @@ float min(float a, float b) {
   return float(a < b ? a : b);
 }
 
+unsigned int max(unsigned int a, unsigned int b) {
+  return (a > b ? a : b);
+}
+
+unsigned int min(unsigned int a, unsigned int b) {
+  return (a < b ? a : b);
+}
+
 float exp2(float x) {
   #ifdef AZGARD_USE_STANDART_MATH
   return std::exp2(x);
@@ -263,6 +271,10 @@ int ceil(float x) {
 
 // Clamps x between a and b
 float clamp(float x, float a, float b) {
+  return max(a, min(b, x));
+}
+
+unsigned int clamp(unsigned int x, unsigned int a, unsigned int b) {
   return max(a, min(b, x));
 }
 

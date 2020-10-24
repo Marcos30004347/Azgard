@@ -22,6 +22,10 @@ void* Azgard::setBytesTo(void* ptr, int value, unsigned long count) {
 }
 
 
+void* Azgard::copyBytes(void* src, void* dest, unsigned int size) {
+    return memcpy(dest, src, size);
+}
+
 /**
  * @brief New operator
  * 

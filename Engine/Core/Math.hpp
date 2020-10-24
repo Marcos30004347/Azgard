@@ -6,6 +6,8 @@ float log (float a);
 float lerp(float a, float b, float w);
 float max(float a, float b);
 float min(float a, float b);
+unsigned int max(unsigned int a, unsigned int b);
+unsigned int min(unsigned int a, unsigned int b);
 float exp2(float x);
 double exp_64(const double x) noexcept;
 double fast_exp(const double x) noexcept;
@@ -31,6 +33,7 @@ int floor(float v);
 int ceil(float v);
 // Clamps x between a and b
 float clamp(float x, float a, float b);
+unsigned int clamp(unsigned int x, unsigned int a, unsigned int b);
 float cosh(float x);
 float cos(float x) noexcept;
 // Returns the scalar or vector converted from radians to degrees.

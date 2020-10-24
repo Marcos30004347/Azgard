@@ -7,11 +7,11 @@
 namespace Azgard {
 class MemoryManager {
 public:
-    static void* mallocFromGlobalPool(long unsigned int size);
-    static void freeInGlobalPool(void* ptr);
+    AZG_API static void* mallocFromGlobalPool(long unsigned int size);
+    AZG_API static void freeInGlobalPool(void* ptr);
 
-    static void startUpThreadLocalPool(); // Should be called in each initializing thread;
-    static void shutDownThreadLocalPool(); // Should be called in each terminating thread;
+    AZG_API static void startUpThreadLocalPool(); // Should be called in each initializing thread;
+    AZG_API static void shutDownThreadLocalPool(); // Should be called in each terminating thread;
 
     static void startUp();
     static void shutDown();

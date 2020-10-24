@@ -55,6 +55,7 @@ Engine/Core/Math.cpp
 
 #Runtime
 Engine/Runtime/Engine.cpp
+Engine/Runtime/TimeManager.cpp
 
 #Debug
 Engine/Debug/Debugger.cpp
@@ -66,7 +67,6 @@ Engine/Library/Window.cpp
 Engine/Library/StringId.cpp
 Engine/Library/String.cpp
 Engine/Library/File.cpp
-Engine/Library/Time.cpp
 Engine/Library/Thread.cpp
 
 #File Formats
@@ -77,6 +77,9 @@ Engine/Format/Json.cpp
 Engine/Memory/Memory.cpp
 Engine/Memory/MemoryPool.cpp
 Engine/Memory/MemoryManager.cpp
+
+#Event
+Engine/Event/EventManager.cpp
 )
 
 # Public include directories

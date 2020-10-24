@@ -18,6 +18,15 @@ void* allocBytes(unsigned long cont);
  */
 void freeBytes(void* ptr);
 
+/**
+ * @brief Copy @size from src to dest.
+ * 
+ * @param src Source to copy.
+ * @param dest Destination of the copy.
+ * @param size Number of copy copied.
+ * @return Pointer to the copied memory.
+ */
+void* copyBytes(void* src, void* dest, unsigned int size);
 
 /**
  * @brief Set @count bytes of @ptr to @value.  

@@ -8,7 +8,7 @@ using namespace Azgard;
 #endif
 
 #ifdef SDL2Window
-#include "SDL.h"
+#include "SDL2/include/SDL.h"
 
 class Window::WindowNativeHandler {
 public:

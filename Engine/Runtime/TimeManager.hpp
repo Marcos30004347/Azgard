@@ -1,5 +1,5 @@
-#ifndef AZGARD_LIB_TIMER
-#define AZGARD_LIB_TIMER
+#ifndef AZGARD_LIB_TIME_MANGAER
+#define AZGARD_LIB_TIME_MANGAER
 
 #include "Core/Engine.hpp"
 
@@ -15,11 +15,16 @@ struct Date {
     long long milliseconds;
 };
 
-class Time {
+class TimeManager {
+    static long programStart;
 public:
     AZG_API static void sleepFor(long long ms);
     AZG_API static long getMillisecondsSinseEpoch() noexcept;
-    AZG_API static Date getDate(long milliseconds_sinse_epoch);
+    AZG_API static long getProgramMilliseconds() noexcept;
+    AZG_API static Date getCurrentDate();
+
+    static void startUp();
+    static void shutDown();
 };
 
 }

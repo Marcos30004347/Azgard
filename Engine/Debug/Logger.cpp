@@ -1,12 +1,10 @@
 #include "Logger.hpp"
 #include "Debugger.hpp"
-#include "Library/Time.hpp"
+#include "Runtime/TimeManager.hpp"
 
 #include <iostream>
 #include <stdio.h>
 #include <cstdarg>
-
-#define AZGARD_DEBUG_BUILD
 
 /**
 Black        0;30     Dark Gray     1;30
@@ -48,7 +46,7 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     LogMessage message = LogMessage();
 
     message.message = buffer;
-    message.time = Time::getMillisecondsSinseEpoch();
+    message.time = TimeManager::getMillisecondsSinseEpoch();
     message.chanel = chanel;
     message.size = size;
     message.type = type;
@@ -101,7 +99,7 @@ void Logger::run(void *data) {
                 break;
             }
 
-            Date date = Time::getDate(message.time);
+            Date date = TimeManager::getCurrentDate();
 
             std::cout <<
             defaultForegroundColor() <<
@@ -143,9 +141,11 @@ void Logger::stopLoggerThread() {
 }
 
 void Logger::waitPendingMessages() {
+    // Wait untial all log messages have been logged
     while(Logger::message_list.size()) {
+        // When the job system kicks out we should probably use other strategy here
         Azgard::Thread::thisThread::yield();
-    } // Wait untial all log messages have been logged
+    }
 }
 
 
