@@ -84,7 +84,7 @@ void Logger::run(void *data) {
     const char* color = defaultForegroundColor();
 
     while(Logger::shouldLoggerLog.load()) {
-        while(!Logger::top) Azgard::Thread::thisThread::yield();
+        while(!Logger::top && Logger::shouldLoggerLog.load()) Azgard::Thread::thisThread::yield();
 
         while(Logger::top) {
             AZG_DEBUG_SCOPE_NAMED("log message")
@@ -118,9 +118,10 @@ void Logger::run(void *data) {
             Logger::pendingMessages.compareExchangeStrong(Logger::pendingMessages.load(), Logger::pendingMessages.load() - 1);
         
             Logger::message_lock.unlock();
-
+            if(Logger::shouldLoggerLog.load()) {
+               break; 
+            }
         }
-
     }
 
     #endif

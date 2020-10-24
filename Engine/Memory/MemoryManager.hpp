@@ -22,16 +22,8 @@ void* operator new(long unsigned int size) { \
 }
 
 #define AZGARD_OVERLOAD_DELETE \
-void operator new(void* ptr) { \
+void operator delete(void* ptr) { \
     return Azgard::MemoryManager::freeInGlobalPool(ptr); \
 }
 
-class teste {
-    public:
-    int a;
-    int b;
-
-    AZGARD_OVERLOAD_NEW
-    AZGARD_OVERLOAD_DELETE
-};
 #endif
