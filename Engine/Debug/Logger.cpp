@@ -30,20 +30,14 @@ const char* defaultBackgroundColor() {return "\033[49m"; }
 
 using namespace Azgard;
 
-Azgard::SpinLock Logger::message_lock;
+Azgard::AsyncQueue<LogMessage> Logger::message_list;
 Azgard::Thread* Logger::logger_thread = nullptr;
-
-LogMessage* Logger::tail = nullptr;
-LogMessage* Logger::top = nullptr;
-
 bool Logger::shouldLoggerLog = true;
-unsigned int Logger::pendingMessages = 0;
 
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
     #if defined(AZGARD_DEBUG_BUILD)
-    Logger::message_lock.lock();
+    // Logger::message_lock.lock();
 
-    Logger::pendingMessages++;
 
     va_list arg;
     va_start (arg, fmt);
@@ -51,22 +45,15 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     char* buffer = new char[size];
     vsprintf(buffer, fmt, arg);
     
-    LogMessage* message = new LogMessage();
+    LogMessage message = LogMessage();
 
-    message->message = buffer;
-    message->next = nullptr;
-    message->parent = Logger::tail;
-    message->time = Time::getMillisecondsSinseEpoch();
-    message->chanel = chanel;
-    message->size = size;
-    message->type = type;
+    message.message = buffer;
+    message.time = Time::getMillisecondsSinseEpoch();
+    message.chanel = chanel;
+    message.size = size;
+    message.type = type;
 
-
-    if(Logger::tail) Logger::tail->next = message;
-    else if(!Logger::top) {
-        Logger::top = message;
-        Logger::tail = message;
-    }
+    Logger::message_list.pushBack(message);
 
 
     // #if defined(TRACY_ENABLE)
@@ -74,8 +61,7 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     // #endif
 
     va_end (arg);
-
-    Logger::message_lock.unlock();
+    // std::cout << "LOGLINE" << std::endl;
     #endif
 }
 
@@ -88,14 +74,18 @@ void Logger::run(void *data) {
     const char* color = defaultForegroundColor();
 
     while(Logger::shouldLoggerLog > 0) {
-        while(!Logger::top && (Logger::shouldLoggerLog > 0)) Azgard::Thread::thisThread::yield();
+        if(Logger::shouldLoggerLog == false) break;
+        while((Logger::message_list.size() == 0) && (Logger::shouldLoggerLog == true)) {
+            Azgard::Thread::thisThread::yield();
+        }
+    
+        if(Logger::message_list.size() > 0){
 
-        while(Logger::top) {
             AZG_DEBUG_SCOPE_NAMED("log message")
             
-            Logger::message_lock.lock();
-
-            switch (Logger::top->type)
+            LogMessage message = Logger::message_list.popFront();
+        
+            switch (message.type)
             {
             case LogMessageType::DEBUG:
                 color = greenForegroundColor();
@@ -111,12 +101,12 @@ void Logger::run(void *data) {
                 break;
             }
 
-            Date date = Time::getDate(Logger::top->time);
+            Date date = Time::getDate(message.time);
 
             std::cout <<
             defaultForegroundColor() <<
             "[" <<
-            LogChannelNames[Logger::top->chanel] <<
+            LogChannelNames[message.chanel] <<
             " " <<
             date.hour <<
             ":" <<
@@ -125,69 +115,53 @@ void Logger::run(void *data) {
             date.seconds <<
             "]: " <<
             color <<
-            Logger::top->message <<
+            message.message <<
             defaultForegroundColor() <<
             std::endl;
-        
-            if(Logger::top->next != Logger::top) tmp = Logger::top->next;
-            else tmp = nullptr;
-        
-            delete Logger::top;
-        
-            Logger::top  = tmp;
-
-            Logger::pendingMessages--;
-        
-            Logger::message_lock.unlock();
-            if(Logger::shouldLoggerLog) {
-               break; 
-            }
+            delete message.message;
         }
-    }
 
+    }  
     #endif
+
 }
 
 
 void Logger::startUp(){
     #if defined(AZGARD_DEBUG_BUILD)
-    Logger::message_lock.lock();
     Logger::shouldLoggerLog = true;
     Logger::logger_thread = new Azgard::Thread(Logger::run, nullptr);
-    Logger::message_lock.unlock();
     #endif
 
 }
 
 void Logger::stopLoggerThread() {
     #if defined(AZGARD_DEBUG_BUILD)
-    Logger::message_lock.lock();
     Logger::shouldLoggerLog = false;
-    Logger::message_lock.unlock();
     #endif
 
 }
 
+void Logger::waitPendingMessages() {
+    while(Logger::message_list.size()) {
+        Azgard::Thread::thisThread::yield();
+    } // Wait untial all log messages have been logged
+}
+
+
 void Logger::shutDown(bool force) {
     #if defined(AZGARD_DEBUG_BUILD)
 
-    while(force && Logger::pendingMessages) {} // Wait untial all log messages have been logged
+    if(!force) {
+        Logger::waitPendingMessages();
+    } else {
+        Logger::message_list.~AsyncQueue();
+    }
 
     Logger::stopLoggerThread();
     Logger::logger_thread->join();
     Logger::logger_thread->close();
     // delete logger_thread;
-    LogMessage* tmp = Logger::top;
-
-    Logger::message_lock.lock();
-
-    while(Logger::top) {
-        tmp = Logger::top->next;
-        delete Logger::top;
-        Logger::top = tmp;
-    }
-
-    Logger::message_lock.unlock();
 
     #endif
 };

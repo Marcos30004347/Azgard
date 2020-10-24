@@ -18,12 +18,22 @@ void MemoryManager::freeInGlobalPool(void* ptr) {
     return gMemoryPoll->free(ptr);
 }
 
-void MemoryManager::startUp() {
+void MemoryManager::startUpThreadLocalPool() {
     gMemoryPoll = new MemoryPool();
+ 
+}
+
+void MemoryManager::shutDownThreadLocalPool() {
+    delete gMemoryPoll;
+
+}
+
+void MemoryManager::startUp() {
+    MemoryManager::startUpThreadLocalPool();
 }
 
 void MemoryManager::shutDown() {
-    delete gMemoryPoll;
+    MemoryManager::shutDownThreadLocalPool();
 }
 
 

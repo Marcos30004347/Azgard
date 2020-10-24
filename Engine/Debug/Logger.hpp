@@ -1,8 +1,8 @@
 #ifndef AZGARD_LOGGER
 #define AZGARD_LOGGER
 
-#include "Library/SpinLock.hpp"
-#include "Library/Atomic.hpp"
+// #include "Library/SpinLock.hpp"
+#include "Library/Async/Queue.hpp"
 #include "Library/Thread.hpp"
 
 namespace Azgard {
@@ -50,21 +50,13 @@ public:
     unsigned int size;
     LogMessageType type;
     LogChannel chanel;
-    LogMessage* next = nullptr;
-    LogMessage* parent = nullptr;
-    ~LogMessage() {
-        delete message;
-    }
 };
 
 class Logger {
     static bool shouldLoggerLog;
-    static unsigned int pendingMessages;
 
-    static LogMessage* tail;
-    static LogMessage* top;
-
-    static Azgard::SpinLock message_lock;
+    // static Azgard::SpinLock message_lock;
+    static AsyncQueue<LogMessage> message_list;
     static Azgard::Thread* logger_thread;
 
     static void run(void* data);
@@ -76,6 +68,7 @@ public:
      */
     static void logLine(LogMessageType type, LogChannel chanel, const char* fmt, ...);
     static void startUp();
+    static void waitPendingMessages();
     static void shutDown(bool force = false);
 };
 

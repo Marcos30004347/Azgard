@@ -10,6 +10,9 @@ public:
     static void* mallocFromGlobalPool(long unsigned int size);
     static void freeInGlobalPool(void* ptr);
 
+    static void startUpThreadLocalPool(); // Should be called in each initializing thread;
+    static void shutDownThreadLocalPool(); // Should be called in each terminating thread;
+
     static void startUp();
     static void shutDown();
 };
