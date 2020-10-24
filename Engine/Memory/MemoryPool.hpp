@@ -11,13 +11,12 @@ namespace Azgard {
 /**
  * @brief Interface Class (pure Virtual) for the MemoryPool.
  */
-class MemoryBlock
+class MemoryPoolInterface
 {
   public :
-    virtual ~MemoryBlock() {};
+    virtual ~MemoryPoolInterface() {};
 
     virtual void *alloc(const unsigned int &sMemorySize) = 0;
-    virtual void free(void *ptrMemoryBlock, const unsigned int &sMemoryBlockSize) = 0;
     virtual void free(void *ptrMemoryBlock) = 0;
 };
 
@@ -43,7 +42,7 @@ struct MemoryChunk
 };
 
 
-class MemoryPool : public MemoryBlock {
+class MemoryPool : public MemoryPoolInterface {
 private :
     MemoryChunk *ptr_first_chunk = nullptr;
     MemoryChunk *ptr_last_chunk = nullptr;
@@ -204,14 +203,6 @@ public :
 	 * @return Pointer to a Memory-Block of "sMemorySize" Bytes, or NULL if an error occured. 
 	 */
     virtual void *alloc(const unsigned int &sMemorySize);
-
-	/**
-	 * @brief Free the allocated memory again....
-	 * 
-	 * @param ptrMemoryBlock Pointer to a Block of Memory, which is to be freed (previoulsy allocated via "alloc()").
-	 * @param sMemoryBlockSize Sizes (in Bytes) of Memory.
-	 */
-	virtual void free(void *ptrMemoryBlock, const unsigned int &sMemoryBlockSize);
 
 	/**
 	 * @brief Free the allocated memory again....

@@ -33,8 +33,13 @@ Azgard::Thread* Logger::logger_thread = nullptr;
 LogMessage* Logger::tail = nullptr;
 LogMessage* Logger::top = nullptr;
 
+Atomic<bool> Logger::shouldLoggerLog;
+Atomic<unsigned int> Logger::pendingMessages;
+
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
     #if defined(AZGARD_DEBUG_BUILD)
+
+    Logger::pendingMessages.compareExchangeStrong(Logger::pendingMessages.load(), Logger::pendingMessages.load() + 1);
 
     va_list arg;
     va_start (arg, fmt);
@@ -72,12 +77,13 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
 
 
 void Logger::run(void *data) {
+    #if defined(AZGARD_DEBUG_BUILD)
     AZG_DEBUGGER_SET_THREAD_NAME("DebuggerThread")
 
     LogMessage* tmp = nullptr;
     const char* color = defaultForegroundColor();
 
-    while(true) {
+    while(Logger::shouldLoggerLog.load()) {
         while(!Logger::top) Azgard::Thread::thisThread::yield();
 
         while(Logger::top) {
@@ -108,21 +114,43 @@ void Logger::run(void *data) {
             delete Logger::top;
         
             Logger::top  = tmp;
+
+            Logger::pendingMessages.compareExchangeStrong(Logger::pendingMessages.load(), Logger::pendingMessages.load() - 1);
         
             Logger::message_lock.unlock();
+
         }
 
     }
+
+    #endif
 }
 
 
 void Logger::startUp(){
+    #if defined(AZGARD_DEBUG_BUILD)
+    Logger::shouldLoggerLog.store(true);
     Logger::logger_thread = new Azgard::Thread(Logger::run, nullptr);
+    #endif
+
 }
 
-void Logger::shutDown(){
+void Logger::stopLoggerThread() {
+    #if defined(AZGARD_DEBUG_BUILD)
+    Logger::shouldLoggerLog.store(false);
+    #endif
+
+}
+
+void Logger::shutDown(bool force) {
+    #if defined(AZGARD_DEBUG_BUILD)
+
+    while(force && Logger::pendingMessages.load()) {} // Wait untial all log messages have been logged
+
+    Logger::stopLoggerThread();
+    Logger::logger_thread->join();
     Logger::logger_thread->close();
-    delete logger_thread;
+    // delete logger_thread;
     LogMessage* tmp = Logger::top;
 
     Logger::message_lock.lock();
@@ -134,4 +162,6 @@ void Logger::shutDown(){
     }
 
     Logger::message_lock.unlock();
+
+    #endif
 };

@@ -1,3 +1,6 @@
+#ifndef AZGARD_CORE_API
+#define AZGARD_CORE_API
+
 /**
  * Azgard Api macros for shared libraries and static libraries 
  */
@@ -16,4 +19,6 @@
     #endif
 #else
     #define AZG_API
+#endif
+
 #endif

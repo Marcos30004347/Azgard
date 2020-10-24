@@ -1,6 +1,8 @@
 #ifndef AZGARD_LIB_XML
 #define AZGARD_LIB_XML
 
+#include "Core/Engine.hpp"
+
 #include "rapidxml.hpp"
 
 #include "Library/File.hpp"
@@ -13,17 +15,17 @@ private:
     rapidxml::xml_attribute<char> *attribute = nullptr;
     XmlAttribute(rapidxml::xml_attribute<>* attribute);
 public:
-    XmlAttribute(const XmlAttribute& other);
-    XmlAttribute next(const char* key = nullptr);
-    const char* readAsText();
-    int readAsInt();
-    long int readAsLongInt();
-    long long int readAsLongLongInt();
-    float readAsFloat();
-    const char* name();
+    AZG_API XmlAttribute(const XmlAttribute& other);
+    AZG_API XmlAttribute next(const char* key = nullptr);
+    AZG_API const char* readAsText();
+    AZG_API int readAsInt();
+    AZG_API long int readAsLongInt();
+    AZG_API long long int readAsLongLongInt();
+    AZG_API float readAsFloat();
+    AZG_API const char* name();
 };
 
-enum XmlNodeType {
+AZG_API enum XmlNodeType {
     cdata = rapidxml::node_type::node_cdata,
     comment = rapidxml::node_type::node_comment,
     data = rapidxml::node_type::node_data,
@@ -41,34 +43,34 @@ private:
     rapidxml::xml_document<>* doc = nullptr;
     XmlNode(rapidxml::xml_node<>* node, rapidxml::xml_document<>* doc);
 public:
-    XmlNode(const XmlNode& other);
-    XmlNode firstNode(const char* key = nullptr);
-    XmlNode nextSibling(const char* key = nullptr);
-    XmlNode appendNode(XmlNodeType type, const char* name, const char* value = nullptr);
-    XmlNode insertNode(XmlNode& where, XmlNodeType type, const char* name, const char* value = nullptr);
-    void removeNode(XmlNode& node);
-    XmlAttribute getAttribute(const char* attribute = nullptr);
-    XmlAttribute addAttribute(const char* name, const char* value);
-    void removeAttribute(XmlAttribute& att);
-    const char* readAsText();
-    int readAsInt();
-    long int readAsLongInt();
-    long long int readAsLongLongInt();
-    float readAsFloat();
-    const char* name();
+    AZG_API XmlNode(const XmlNode& other);
+    AZG_API XmlNode firstNode(const char* key = nullptr);
+    AZG_API XmlNode nextSibling(const char* key = nullptr);
+    AZG_API XmlNode appendNode(XmlNodeType type, const char* name, const char* value = nullptr);
+    AZG_API XmlNode insertNode(XmlNode& where, XmlNodeType type, const char* name, const char* value = nullptr);
+    AZG_API void removeNode(XmlNode& node);
+    AZG_API XmlAttribute getAttribute(const char* attribute = nullptr);
+    AZG_API XmlAttribute addAttribute(const char* name, const char* value);
+    AZG_API void removeAttribute(XmlAttribute& att);
+    AZG_API const char* readAsText();
+    AZG_API int readAsInt();
+    AZG_API long int readAsLongInt();
+    AZG_API long long int readAsLongLongInt();
+    AZG_API float readAsFloat();
+    AZG_API const char* name();
 };
 
 class XmlDocument {
-public:
-    XmlDocument(File* file);
-    XmlDocument(const char* src);
-    ~XmlDocument();
-    XmlNode firstNode(const char* key = nullptr);
-    XmlNode appendNode(XmlNodeType type, const char* name, const char* value = nullptr);
-    void save(File* handle);
 private:
     char* xml_raw;
     rapidxml::xml_document<>* doc = nullptr;
+public:
+    AZG_API XmlDocument(File* file);
+    AZG_API XmlDocument(const char* src);
+    AZG_API ~XmlDocument();
+    AZG_API XmlNode firstNode(const char* key = nullptr);
+    AZG_API XmlNode appendNode(XmlNodeType type, const char* name, const char* value = nullptr);
+    AZG_API void save(File* handle);
 };
 
 

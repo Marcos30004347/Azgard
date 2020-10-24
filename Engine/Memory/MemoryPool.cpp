@@ -60,21 +60,6 @@ void *MemoryPool::alloc(const unsigned int &sMemorySize) {
 }
 
 
-void MemoryPool::free(void *ptrMemoryBlock, const unsigned int &sMemoryBlockSize) {
-  // Search all Chunks for the one holding the "ptrMemoryBlock"-Pointer
-  // ("MemoryChunk->Data == ptrMemoryBlock"). Eventually, free that Chunks,
-  // so it beecomes available to the Memory-Pool again...
-  MemoryChunk *ptrChunk = findChunkHoldingPointerTo(ptrMemoryBlock);
-  if(ptrChunk) {
-	  freeChunks(ptrChunk);
-  }
-  else {
-	  AZG_CORE_ASSERT_AND_REPORT(false, "Requested Pointer not in Memory Pool");
-  }
-  AZG_CORE_ASSERT_AND_REPORT((object_count > 0), "Request to delete more Memory then allocated.");
-  object_count--;
-}
-
 void MemoryPool::free(void *ptrMemoryBlock) {
   // Search all Chunks for the one holding the "ptrMemoryBlock"-Pointer
   // ("MemoryChunk->Data == ptrMemoryBlock"). Eventually, free that Chunks,
@@ -91,6 +76,7 @@ void MemoryPool::free(void *ptrMemoryBlock) {
 
   object_count--;
 }
+
 bool MemoryPool::allocateMemory(const unsigned int &sMemorySize) {
   unsigned int neededChunks = calculateNeededChunks(sMemorySize);
   unsigned int sBestMemBlockSize = calculateBestMemoryBlockSize(sMemorySize);

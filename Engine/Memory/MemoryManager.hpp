@@ -4,25 +4,34 @@
 #include "Core/Api.hpp"
 #include "Memory.hpp"
 
+namespace Azgard {
 class MemoryManager {
 public:
-    AZG_API static void* mallocFromGlobalPool(long unsigned int size);
-    AZG_API static void freeInGlobalPool(void* ptr);
+    static void* mallocFromGlobalPool(long unsigned int size);
+    static void freeInGlobalPool(void* ptr);
 
-    AZG_API static void startUp();
-    AZG_API static void shutDown();
+    static void startUp();
+    static void shutDown();
 };
+}
 
 
 #define AZGARD_OVERLOAD_NEW \
 void* operator new(long unsigned int size) { \
-    return MemoryManager::mallocFromGlobalPool(size); \
+    return Azgard::MemoryManager::mallocFromGlobalPool(size); \
 }
 
 #define AZGARD_OVERLOAD_DELETE \
 void operator new(void* ptr) { \
-    return MemoryManager::freeInGlobalPool(ptr); \
+    return Azgard::MemoryManager::freeInGlobalPool(ptr); \
 }
 
+class teste {
+    public:
+    int a;
+    int b;
 
+    AZGARD_OVERLOAD_NEW
+    AZGARD_OVERLOAD_DELETE
+};
 #endif

@@ -1,5 +1,7 @@
 #ifndef AZGARD_LIB_JSON
 #define AZGARD_LIB_JSON
+
+#include "Core/Engine.hpp"
 #include "rapidjson/document.h"
 #include "rapidjson/prettywriter.h"
 
@@ -8,67 +10,69 @@
 namespace Azgard {
 
 class JsonHandle {
-public:
     rapidjson::Document* doc = nullptr;
     JsonHandle(rapidjson::Document* document);
+    friend class JsonValue;
+    friend class JsonDocument;
 };
 
 class JsonValue {
-public:
+    friend class JsonDocument;
     rapidjson::Value* val = nullptr;
     rapidjson::Document* doc = nullptr;
     JsonValue(rapidjson::Value* value, rapidjson::Document* document);
-    bool has(const char* key);
-    bool isNull();
-    const char* readAsString();
-    int readAsFloat();
-    int readAsDouble();
-    int readAsInt();
-    int readAsLongInt();
-    int readAsUnsignedInt();
-    int readAsLongUnsignedInt();
-    JsonValue readAsArray(int index);
-    bool readAsBool();
-    void erase(JsonValue value);
-    JsonValue get(const char* key);
-    void insertInt(const char* key, int value);
-    void insertString(const char* key, const char* value);
-    void insertArray(const char* key);
-    void insertValue(const char* key, JsonValue value);
-    void pushBackValue(JsonValue v);
-    void pushBackInt(int i);
-    void pushBackBool(bool i);
-    void pushBackString(const char* str);
-    JsonValue operator[](const char* key);
-    JsonValue operator[](int key);
-    JsonValue operator=(const char* str);
-    JsonValue& operator=(JsonValue& value);
-    JsonValue& operator=(JsonValue value);
-    JsonValue& operator=(float val);
-    JsonValue& operator=(double val);
-    JsonValue& operator=(int val);
-    JsonValue& operator=(long int val);
-    JsonValue& operator=(unsigned int val);
+public:
+    AZG_API bool has(const char* key);
+    AZG_API bool isNull();
+    AZG_API const char* readAsString();
+    AZG_API int readAsFloat();
+    AZG_API int readAsDouble();
+    AZG_API int readAsInt();
+    AZG_API int readAsLongInt();
+    AZG_API int readAsUnsignedInt();
+    AZG_API int readAsLongUnsignedInt();
+    AZG_API JsonValue readAsArray(int index);
+    AZG_API bool readAsBool();
+    AZG_API void erase(JsonValue value);
+    AZG_API JsonValue get(const char* key);
+    AZG_API void insertInt(const char* key, int value);
+    AZG_API void insertString(const char* key, const char* value);
+    AZG_API void insertArray(const char* key);
+    AZG_API void insertValue(const char* key, JsonValue value);
+    AZG_API void pushBackValue(JsonValue v);
+    AZG_API void pushBackInt(int i);
+    AZG_API void pushBackBool(bool i);
+    AZG_API void pushBackString(const char* str);
+    AZG_API JsonValue operator[](const char* key);
+    AZG_API JsonValue operator[](int key);
+    AZG_API JsonValue operator=(const char* str);
+    AZG_API JsonValue& operator=(JsonValue& value);
+    AZG_API JsonValue& operator=(JsonValue value);
+    AZG_API JsonValue& operator=(float val);
+    AZG_API JsonValue& operator=(double val);
+    AZG_API JsonValue& operator=(int val);
+    AZG_API JsonValue& operator=(long int val);
+    AZG_API JsonValue& operator=(unsigned int val);
 };
 
 class JsonDocument {
     JsonHandle* document = nullptr;
 public:
-    JsonDocument(const char* src);
-    JsonDocument(File* file);
-    ~JsonDocument();
-    JsonValue get(const char* key);
-    bool has(const char* key);
-    bool isNull(const char* key);
-    bool erase(const char* key);
-    void insertInt(const char* key, int value);
-    void insertString(const char* key, const char* value);
-    void insertArray(const char* key);
-    void insertValue(const char* key, JsonValue value);
-    JsonValue readAsArray(int index);
-    JsonValue operator[](const char* key);
-    JsonValue operator[](int key);
-    void save(File* handle);
+    AZG_API JsonDocument(const char* src);
+    AZG_API JsonDocument(File* file);
+    AZG_API ~JsonDocument();
+    AZG_API JsonValue get(const char* key);
+    AZG_API bool has(const char* key);
+    AZG_API bool isNull(const char* key);
+    AZG_API bool erase(const char* key);
+    AZG_API void insertInt(const char* key, int value);
+    AZG_API void insertString(const char* key, const char* value);
+    AZG_API void insertArray(const char* key);
+    AZG_API void insertValue(const char* key, JsonValue value);
+    AZG_API JsonValue readAsArray(int index);
+    AZG_API JsonValue operator[](const char* key);
+    AZG_API JsonValue operator[](int key);
+    AZG_API void save(File* handle);
 };
 
 }

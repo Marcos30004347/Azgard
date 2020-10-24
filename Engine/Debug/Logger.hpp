@@ -2,6 +2,7 @@
 #define AZGARD_LOGGER
 
 #include "Library/SpinLock.hpp"
+#include "Library/Atomic.hpp"
 #include "Library/Thread.hpp"
 
 namespace Azgard {
@@ -57,6 +58,8 @@ public:
 };
 
 class Logger {
+    static Atomic<bool> shouldLoggerLog;
+    static Atomic<unsigned int> pendingMessages;
 
     static LogMessage* tail;
     static LogMessage* top;
@@ -65,6 +68,7 @@ class Logger {
     static Azgard::Thread* logger_thread;
 
     static void run(void* data);
+    static void stopLoggerThread();
 
 public:
     /**
@@ -72,7 +76,7 @@ public:
      */
     static void logLine(LogMessageType type, LogChannel chanel, const char* fmt, ...);
     static void startUp();
-    static void shutDown();
+    static void shutDown(bool force = false);
 };
 
 }

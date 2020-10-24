@@ -51,6 +51,9 @@ add_library(azgard ${AZGARD_LIB_TYPE}
   Engine/Core/Assert.cpp
   Engine/Core/Math.cpp
 
+  #Runtime
+  Engine/Runtime/Engine.cpp
+
   #Debug
   Engine/Debug/Debugger.cpp
   Engine/Debug/Logger.cpp
@@ -71,6 +74,7 @@ add_library(azgard ${AZGARD_LIB_TYPE}
   #Memory
   Engine/Memory/Memory.cpp
   Engine/Memory/MemoryPool.cpp
+  Engine/Memory/MemoryManager.cpp
 )
 
 
