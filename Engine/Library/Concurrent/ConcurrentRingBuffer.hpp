@@ -6,7 +6,7 @@
 namespace Azgard {
 
 template<typename T, unsigned int ring_size>
-class RingBuffer {
+class ConcurrentRingBuffer {
     T buff[ring_size];
     SpinLock mutex;
 
@@ -14,8 +14,8 @@ class RingBuffer {
 
     public:
 
-    RingBuffer();
-    ~RingBuffer();
+    ConcurrentRingBuffer();
+    ~ConcurrentRingBuffer();
     bool enqueue(const T& data);
     bool dequeue(T& value);
 
@@ -23,13 +23,13 @@ class RingBuffer {
 };
 
 template<typename T, unsigned int ring_size>
-RingBuffer<T,ring_size>::RingBuffer(): mutex{}, top{0}, tail{0}, _size{0} {}
+ConcurrentRingBuffer<T,ring_size>::ConcurrentRingBuffer(): mutex{}, top{0}, tail{0}, _size{0} {}
 
 template<typename T, unsigned int ring_size>
-RingBuffer<T,ring_size>::~RingBuffer() {}
+ConcurrentRingBuffer<T,ring_size>::~ConcurrentRingBuffer() {}
 
 template<typename T, unsigned int ring_size>
-bool RingBuffer<T,ring_size>::enqueue(const T& data) {
+bool ConcurrentRingBuffer<T,ring_size>::enqueue(const T& data) {
     mutex.lock();
     if((top + 1)%(ring_size+1) == tail) {
         mutex.unlock();
@@ -46,7 +46,7 @@ bool RingBuffer<T,ring_size>::enqueue(const T& data) {
 
 
 template<typename T, unsigned int ring_size>
-bool RingBuffer<T, ring_size>::dequeue(T& value) {
+bool ConcurrentRingBuffer<T, ring_size>::dequeue(T& value) {
     mutex.lock();
     if(top == tail) {
         mutex.unlock();

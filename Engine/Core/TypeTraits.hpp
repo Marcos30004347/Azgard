@@ -514,6 +514,33 @@ template<bool Cond, typename Iftrue, typename IfFalse>
 template<typename Iftrue, typename IfFalse>
   struct conditionalType<false, Iftrue, IfFalse>
   { typedef IfFalse type; };
+
+
+  template<bool __v>
+    using boolConstant = integralConstant<bool, __v>;
+
+  /// is_trivially_constructible
+  template<typename _Tp, typename... _Args>
+    struct is_trivially_constructible
+    : public boolConstant<__is_trivially_constructible(_Tp, _Args...)>
+    { };
+  
+  /// isTriviallyDefaultConstructible
+  template<typename _Tp>
+    struct isTriviallyDefaultConstructible
+    : public is_trivially_constructible<_Tp>::type
+    { };
+  
+  // #include<type_traits>
+  /// isSame
+  template<typename, typename>
+    struct isSame
+    : public falseType { };
+
+  template<typename T>
+    struct isSame<T, T>
+    : public trueType { };
+
 }
 
 #endif

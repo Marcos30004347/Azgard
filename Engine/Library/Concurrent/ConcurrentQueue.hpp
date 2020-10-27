@@ -10,7 +10,7 @@ namespace Azgard {
 
 
 template<typename T> 
-class AsyncQueue {
+class ConcurrentQueue {
 // TODO: Alocate AsyncLinkedList from pool.
 private:
     class Item {
@@ -35,8 +35,8 @@ private:
     Item* tail = nullptr;
     unsigned int count = 0;
 public:
-    AsyncQueue(){}
-    ~AsyncQueue(){
+    ConcurrentQueue(){}
+    ~ConcurrentQueue(){
         this->lock.lock();
 
         Item* tmp;

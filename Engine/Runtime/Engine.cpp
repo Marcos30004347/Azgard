@@ -4,6 +4,7 @@
 #include "Memory/MemoryManager.hpp"
 #include "Runtime/TimeManager.hpp"
 #include "Event/EventManager.hpp"
+#include "Library/Name.hpp"
 
 #ifdef AZGARD_DEBUG_BUILD
 #include "Debug/Logger.hpp"
@@ -20,7 +21,8 @@ AZG_API void Azgard::Engine::startUp() {
 
     MemoryManager::startUp();
     TimeManager::startUp();
-    EventManager::startUp();
+    Name::startUpNameHashTable();
+    // EventManager::startUp();
 }
 
 AZG_API void Azgard::Engine::shutDown() {
@@ -28,7 +30,9 @@ AZG_API void Azgard::Engine::shutDown() {
     // sinse some subsytems depend on each other. So do not change
     // the order of termination
  
-    EventManager::shutDown();
+    // EventManager::shutDown();
+
+    Name::shutDownNameHashTable();
     TimeManager::startUp();
     MemoryManager::shutDown();
 

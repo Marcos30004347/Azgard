@@ -1,7 +1,7 @@
 #ifndef AZGARD_EVENT_MANAGER
 #define AZGARD_EVENT_MANAGER
 
-#include "Library/Async/Vector.hpp"
+#include "Library/Concurrent/ConcurrentVector.hpp"
 #include "Library/Thread.hpp"
 #include "Input/KeyCode.hpp"
 
@@ -23,7 +23,7 @@ typedef void(*EventCallback)(void*);
 template<typename EventData>
 class Event {
 private:
-    static AsyncVector<EventCallback> callbacks;
+    static ConcurrentVector<EventCallback> callbacks;
 
 public:
     static void dispatch(EventData data) {
@@ -40,7 +40,7 @@ public:
 };
 
 template<typename EventData>
-AsyncVector<EventCallback> Event<EventData>::callbacks;
+ConcurrentVector<EventCallback> Event<EventData>::callbacks;
 
 
 

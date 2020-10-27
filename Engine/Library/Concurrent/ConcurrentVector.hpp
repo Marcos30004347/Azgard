@@ -12,7 +12,7 @@
 namespace Azgard {
 
 template<typename T, unsigned int max_increase = 10000> 
-class AsyncVector {
+class ConcurrentVector {
     class Iterator {
         public:
         int first;
@@ -32,7 +32,7 @@ class AsyncVector {
         }
         private:
         Iterator(int index, T& val): first{index}, second{val} {}
-        // friend class AsyncVector;
+        // friend class ConcurrentVector;
     };
 
 private:
@@ -58,13 +58,13 @@ private:
     }
 
 public:
-    AsyncVector(unsigned int reserve = 1) {
+    ConcurrentVector(unsigned int reserve = 1) {
         this->array_size = reserve;
         this->_length = 0;
         this->_data = new T[reserve];
     }
 
-    ~AsyncVector() {
+    ~ConcurrentVector() {
         if(this->_data) delete this->_data;
     }
     void clearAndReserve(unsigned int size) {

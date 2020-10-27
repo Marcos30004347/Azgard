@@ -64,7 +64,7 @@ Engine/Debug/Logger.cpp
 #Library
 Engine/Library/SpinLock.cpp
 Engine/Library/Window.cpp
-Engine/Library/StringId.cpp
+Engine/Library/Name.cpp
 Engine/Library/String.cpp
 Engine/Library/File.cpp
 Engine/Library/Thread.cpp

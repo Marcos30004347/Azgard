@@ -2,7 +2,7 @@
 #define AZGARD_LOGGER
 
 // #include "Library/SpinLock.hpp"
-#include "Library/Async/Queue.hpp"
+#include "Library/Concurrent/ConcurrentQueue.hpp"
 #include "Library/Thread.hpp"
 
 namespace Azgard {
@@ -56,7 +56,7 @@ class Logger {
     static bool shouldLoggerLog;
 
     // static Azgard::SpinLock message_lock;
-    static AsyncQueue<LogMessage> message_list;
+    static ConcurrentQueue<LogMessage> message_list;
     static Azgard::Thread* logger_thread;
 
     static void run(void* data);
@@ -75,11 +75,11 @@ public:
 }
 
 #ifdef AZGARD_DEBUG_BUILD
-#define AZG_LOG(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_DEBUG(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #else
-#define AZG_LOG(chanel, fmt, ...) 
+#define AZG_LOG_DEBUG(chanel, fmt, ...) 
 #define AZG_LOG_ERROR(chanel, fmt, ...)
 #define AZG_LOG_WARNING(chanel, fmt, ...)
 #endif

@@ -4,3 +4,11 @@ Add building support for Browser(Emscripten), Android, Windows, Macos, IOS
 Make Debugger log messages to window screen
 Rewrite Library/StringId class
 Rewrite Library/String
+
+Add File open/save dialog for:
+    - Windows
+    - MacOS
+    - Linux
+    - Browser(Emscripten)
+    - Android (if possible)
+    - IOS (if possible)
