@@ -2,31 +2,24 @@
 #ifndef AZGARD_LIB_FILE_MANAGER
 #define AZGARD_LIB_FILE_MANAGER
 
-#include <string>
+/**
+ * TODO: When Job system kicks out will problably be more performant
+ * to use it for async I/O operations.
+ */
+
+#include "Core/Engine.hpp"
+
+#include "Library/Concurrent/ConcurrentQueue.hpp"
+#include "Library/Thread.hpp"
+#include "Library/SpinLock.hpp"
+#include "Library/Name.hpp"
+#include "Library/String.hpp"
+
+#include <fstream>
 
 namespace Azgard {
 
-/**
- * @brief Object that represents a path on the platform file system.
- */
-class FilePath {
-public:
-    /**
-     * @brief Construct a new File Path object
-     * 
-     * @param path: Begining of a path.
-     * @param ...
-     */
-    FilePath(const char* path, ...);
-
-private:
-    /**
-     * @brief buffer that holds the string path.
-     */
-    std::string buffer;
-
-friend class FileManager;
-};
+typedef Name FilePath;
 
 enum FileMode {
     binary = 1,
@@ -36,26 +29,91 @@ enum FileMode {
     truncate = 16,
     append = 32,
 };
-/**
- * @brief Class used to deal with files.
- */
+
+
+typedef void(*AsyncFileReadCallback)(String str);
+typedef void(*AsyncFileOpenCallback)(FileHandle str);
+typedef void(*AsyncFileCloseCallback)(void);
+
+class FileHandle {
+private:
+    friend class FileManager;
+    std::fstream* fileStream = nullptr;
+
+public:
+    void write(String data);
+    String readEntireBuffer();
+    String read(unsigned int size);
+
+    void asyncReadEntireBuffer(AsyncFileReadCallback callback);
+    void asyncRead(unsigned int size, AsyncFileReadCallback callback);
+    bool isEndOfFile();
+
+    FileHandle& operator=(FileHandle& other) {
+        this->fileStream = other.fileStream;
+        other.fileStream = nullptr;
+    }
+};
+
+
+class AsyncReadEntireBurrerReq {
+public:
+    FileHandle file;
+    AsyncFileReadCallback callback;
+};
+
+class AsyncReadReq {
+public:
+    unsigned int size;
+    FileHandle file;
+    AsyncFileReadCallback callback;
+};
+
+class AsyncOpenReq {
+public:
+    int mode = 0;
+    FilePath path = "";
+    AsyncFileOpenCallback callback;
+};
+
+class AsyncCloseReq {
+public:
+    FileHandle file;
+    AsyncFileCloseCallback callback;
+};
+
+
+
 class FileManager {
 public:
+    static FileHandle open(FilePath path, int fileMode = FileMode::binary);
+    static void close(FileHandle& file);
 
-    static FileManager* open(const char* path, int fileMode = FileMode::binary);
-    static void close(FileManager* file);
-    
+    static void asyncOpen(FilePath path, int fileMode, AsyncFileOpenCallback callback);
+    static void asyncColse(FileHandle file, AsyncFileCloseCallback callback);
 
-    void write(std::string data);
-    std::string getBuffer();
-    std::string getNextLine();
-    bool isEndOfFile();
+    static void startUp();
+    static void shutDown();
+
+
+    static void asyncOpen(AsyncFileOpenCallback callback);
+
 private:
-    FileManager();
-    ~FileManager();
+    static SpinLock io_lock;
+    static SpinLock manager_lock;
 
-    class NativeFileHandle;
-    NativeFileHandle* handle = nullptr;
+    static bool shouldFileWorkersRun;
+    static Thread** workers;
+
+    static void workerRun(void* data);
+
+    static ConcurrentQueue<AsyncCloseReq>* closeRequests;
+    static ConcurrentQueue<AsyncOpenReq>* openRequests;
+    static ConcurrentQueue<AsyncReadEntireBurrerReq>* readEntireBufferRequests;
+    static ConcurrentQueue<AsyncReadReq>* readRequests;
+    static void waitPendingRequests();
+
+    friend class FileHandle;
 };
 
 

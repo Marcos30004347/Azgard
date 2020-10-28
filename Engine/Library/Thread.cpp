@@ -77,7 +77,7 @@ bool Thread::thisThread::setAffinity(int core) {
     CPU_SET(7, &my_set);
     sched_setaffinity(0, sizeof(cpu_set_t), &my_set);
     #endif
-    return false;
+    return true;
 }
 
 void Thread::thisThread::yield() {

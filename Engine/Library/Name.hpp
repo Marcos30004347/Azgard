@@ -17,6 +17,7 @@ class Name {
 public:
     const char* value() noexcept;
 
+    Name();
 
     Name(const char* string);
     ~Name();

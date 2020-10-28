@@ -28,10 +28,9 @@ const char* defaultBackgroundColor() {return "\033[49m"; }
 
 using namespace Azgard;
 
-Azgard::ConcurrentQueue<LogMessage> Logger::message_list;
+Azgard::ConcurrentQueue<LogMessage>* Logger::message_list  = nullptr;
 Azgard::Thread* Logger::logger_thread = nullptr;
 bool Logger::shouldLoggerLog = true;
-
 
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
     #if defined(AZGARD_DEBUG_BUILD)
@@ -51,7 +50,7 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     message.size = 0;
     message.type = type;
 
-    Logger::message_list.pushBack(message);
+    Logger::message_list->pushBack(message);
 
 
     // #if defined(TRACY_ENABLE)
@@ -70,17 +69,17 @@ void Logger::run(void *data) {
     LogMessage* tmp = nullptr;
     const char* color = defaultForegroundColor();
 
-    while(Logger::shouldLoggerLog > 0) {
+    while(Logger::shouldLoggerLog) {
         if(Logger::shouldLoggerLog == false) break;
-        while((Logger::message_list.size() == 0) && (Logger::shouldLoggerLog == true)) {
+        while((Logger::message_list->size() == 0) && (Logger::shouldLoggerLog == true)) {
             Azgard::Thread::thisThread::yield();
         }
     
-        if(Logger::message_list.size() > 0){
+        if(Logger::message_list->size() > 0){
 
             AZG_DEBUG_SCOPE_NAMED("log message")
             
-            LogMessage message = Logger::message_list.popFront();
+            LogMessage message = Logger::message_list->popFront();
         
             switch (message.type)
             {
@@ -127,6 +126,7 @@ void Logger::run(void *data) {
 void Logger::startUp(){
     #if defined(AZGARD_DEBUG_BUILD)
     Logger::shouldLoggerLog = true;
+    Logger::message_list = new Azgard::ConcurrentQueue<LogMessage>();
     Logger::logger_thread = new Azgard::Thread(Logger::run, nullptr);
     #endif
 
@@ -141,7 +141,7 @@ void Logger::stopLoggerThread() {
 
 void Logger::waitPendingMessages() {
     // Wait untial all log messages have been logged
-    while(Logger::message_list.size()) {
+    while(Logger::message_list->size()) {
         // When the job system kicks out we should probably use other strategy here
         Azgard::Thread::thisThread::yield();
     }
@@ -154,7 +154,7 @@ void Logger::shutDown(bool force) {
     if(!force) {
         Logger::waitPendingMessages();
     } else {
-        Logger::message_list.~ConcurrentQueue();
+        delete Logger::message_list;
     }
 
     Logger::stopLoggerThread();

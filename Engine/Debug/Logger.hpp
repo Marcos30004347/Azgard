@@ -56,7 +56,7 @@ class Logger {
     static bool shouldLoggerLog;
 
     // static Azgard::SpinLock message_lock;
-    static ConcurrentQueue<LogMessage> message_list;
+    static ConcurrentQueue<LogMessage>* message_list;
     static Azgard::Thread* logger_thread;
 
     static void run(void* data);

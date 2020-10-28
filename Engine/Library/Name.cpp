@@ -57,3 +57,7 @@ Name& Name::operator = (Name& other) noexcept {
     reference = Azgard::move(other.reference);
     return *this;
 }
+
+Name::Name() {
+    reference = NameHashTable->insert(StringHasher(""));
+}
