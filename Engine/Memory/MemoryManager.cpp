@@ -6,34 +6,49 @@ using namespace Azgard;
 
 thread_local MemoryPool* gMemoryPoll = nullptr;
 
-AZG_API void* MemoryManager::mallocFromGlobalPool(long unsigned int size) {
+MemoryManager::MemoryManager() {}
+MemoryManager::~MemoryManager() {}
+
+void* MemoryManager::mallocFromGlobalPool(long unsigned int size) {
     AZG_CORE_ASSERT_AND_REPORT(gMemoryPoll != nullptr, "Memory manager not initialized!");
     return gMemoryPoll->alloc(size);
 }
 
-AZG_API void MemoryManager::freeInGlobalPool(void* ptr) {
+void MemoryManager::freeInGlobalPool(void* ptr) {
     AZG_CORE_ASSERT_AND_REPORT(ptr != nullptr, "Freeing null pointer!");
     AZG_CORE_ASSERT_AND_REPORT(gMemoryPoll != nullptr, "Memory manager not initialized!");
 
     return gMemoryPoll->free(ptr);
 }
 
-AZG_API void MemoryManager::startUpThreadLocalPool() {
-    gMemoryPoll = new MemoryPool();
+void MemoryManager::startUpThreadLocalPool() {
+    gMemoryPoll = AZG_NEW MemoryPool();
  
 }
 
-AZG_API void MemoryManager::shutDownThreadLocalPool() {
+void MemoryManager::shutDownThreadLocalPool() {
     delete gMemoryPoll;
 
 }
 
 void MemoryManager::startUp() {
-    MemoryManager::startUpThreadLocalPool();
+    AZG_DEBUG_SCOPE;
+    AZG_LOG_DEBUG(LogChannel::CORE_CHANNEL, "Memory Manager Starting...");
+
+    MemoryManager::gInstancePtr = AZG_NEW MemoryManager();
+    MemoryManager::gInstancePtr->startUpThreadLocalPool();
+
+    AZG_LOG_DEBUG(LogChannel::CORE_CHANNEL, "Memory Manager Started!");
 }
 
 void MemoryManager::shutDown() {
-    MemoryManager::shutDownThreadLocalPool();
+    AZG_DEBUG_SCOPE;
+    AZG_LOG_DEBUG(LogChannel::CORE_CHANNEL, "Memory Manager Terminating...");
+
+    MemoryManager::gInstancePtr->shutDownThreadLocalPool();
+    delete MemoryManager::gInstancePtr;
+
+    AZG_LOG_DEBUG(LogChannel::CORE_CHANNEL, "Memory Manager Terminated...");
 }
 
 

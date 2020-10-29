@@ -2,6 +2,7 @@
 #define AZGARD_EVENT_MANAGER
 
 #include "Library/Concurrent/ConcurrentVector.hpp"
+#include "Library/Singleton.hpp"
 #include "Library/Thread.hpp"
 #include "Input/KeyCode.hpp"
 
@@ -44,12 +45,15 @@ ConcurrentVector<EventCallback> Event<EventData>::callbacks;
 
 
 
-class EventManager {
+class EventManager: public Singleton<EventManager> {
 friend class Engine;
-
 private:
-    static bool shoudPoolEvents;
-    static Thread* eventWorker;
+    EventManager();
+    ~EventManager();
+
+    bool shoudPoolEvents = true;
+    Thread* eventWorker = nullptr;
+
     static void eventWorkerRun(void* data);
     static void startUp();
     static void shutDown();

@@ -3,7 +3,7 @@
 #ifndef AZGARD_MEMORY_POOL
 #define AZGARD_MEMORY_POOL
 
-#include "Library/File.hpp"
+#include "File/FileHandle.hpp"
 
 
 namespace Azgard {
@@ -218,7 +218,7 @@ public :
 	 * @param file File of the MemoryDump.
 	 * @return true on success, false otherwise  
 	 */
-    bool writeMemoryDumpToFile(File* file);
+    bool writeMemoryDumpToFile(FileHandle file);
 
 	/**
 	 * @brief Check, if a Pointer is in the Memory-Pool. Remainder that this Checks only if a pointer is inside the Memory-Pool,

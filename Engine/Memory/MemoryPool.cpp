@@ -2,7 +2,6 @@
 
 #include "Core/Math.hpp"
 #include "Core/Assert.hpp"
-#include "Library/File.hpp"
 #include "Memory/Memory.hpp"
 #include "Memory/MemoryPool.hpp"
 
@@ -81,9 +80,9 @@ bool MemoryPool::allocateMemory(const unsigned int &sMemorySize) {
   unsigned int neededChunks = calculateNeededChunks(sMemorySize);
   unsigned int sBestMemBlockSize = calculateBestMemoryBlockSize(sMemorySize);
 
-  unsigned char *ptrNewMemBlock = (unsigned char *) Azgard::allocBytes(sBestMemBlockSize); // allocate from Operating System
+  unsigned char *ptrNewMemBlock = (unsigned char *) Azgard::allocBytes(sBestMemBlockSize,__FILE__, __LINE__); // allocate from Operating System
 
-  MemoryChunk *ptrNewChunks = (MemoryChunk *) Azgard::allocBytes((neededChunks * sizeof(MemoryChunk))); // allocate Chunk-Array to Manage the Memory
+  MemoryChunk *ptrNewChunks = (MemoryChunk *) Azgard::allocBytes((neededChunks * sizeof(MemoryChunk)), __FILE__, __LINE__); // allocate Chunk-Array to Manage the Memory
   AZG_CORE_ASSERT_AND_REPORT(((ptrNewMemBlock) && (ptrNewChunks)), "System ran out of Memory");
 
   total_memory_pool_size += sBestMemBlockSize;
@@ -194,7 +193,7 @@ void MemoryPool::setMemoryChunkValues(MemoryChunk *ptrChunk, const unsigned int 
 }
 
 
-bool MemoryPool::writeMemoryDumpToFile(File* file) {
+bool MemoryPool::writeMemoryDumpToFile(FileHandle file) {
   bool bWriteSuccesfull = false;
   // std::ofstream ofOutputFile;
   // ofOutputFile.open(strFileName, std::ofstream::out | std::ofstream::binary);
@@ -205,7 +204,7 @@ bool MemoryPool::writeMemoryDumpToFile(File* file) {
 		//   ofOutputFile.write(((char *)ptrCurrentChunk->Data), ((std::streamsize) memory_chunk_size));
     //   bWriteSuccesfull = true;
     // }
-    file->write(((char *)ptrCurrentChunk->Data));
+    file.syncWrite(((char *)ptrCurrentChunk->Data));
     ptrCurrentChunk = ptrCurrentChunk->Next;
   }
   // ofOutputFile.close();
@@ -295,23 +294,21 @@ void MemoryPool::freeAllAllocatedMemory() {
 }
 
 
-void MemoryPool::deallocateAllChunks()
-{
+void MemoryPool::deallocateAllChunks() {
   MemoryChunk *ptrChunk = ptr_first_chunk;
   MemoryChunk *ptrChunkToDelete = nullptr;
   while(ptrChunk) {
+    ptrChunkToDelete = ptrChunk;
     if(ptrChunk->IsAllocationChunk) {	
       if(ptrChunkToDelete) {
         Azgard::freeBytes(((void *) ptrChunkToDelete));
       }
-      ptrChunkToDelete = ptrChunk;
     }
     ptrChunk = ptrChunk->Next;
   }
 }
 
-bool MemoryPool::isValidPointer(void *ptrPointer)
-{
+bool MemoryPool::isValidPointer(void *ptrPointer) {
   MemoryChunk *ptrChunk = ptr_first_chunk;
 	while(ptrChunk) {
 		if(ptrChunk->Data == ((unsigned char *) ptrPointer)) {

@@ -4,6 +4,7 @@
 // #include "Library/SpinLock.hpp"
 #include "Library/Concurrent/ConcurrentQueue.hpp"
 #include "Library/Thread.hpp"
+#include "Library/Singleton.hpp"
 
 namespace Azgard {
 
@@ -46,39 +47,42 @@ enum LogMessageType {
 class LogMessage {
 public:
     char* message = nullptr;
-    long long time;
+    long time;
     unsigned int size;
     LogMessageType type;
     LogChannel chanel;
 };
 
-class Logger {
-    static bool shouldLoggerLog;
+class Logger: public Singleton<Logger> {
+    bool shouldLoggerLog;
 
-    // static Azgard::SpinLock message_lock;
-    static ConcurrentQueue<LogMessage>* message_list;
-    static Azgard::Thread* logger_thread;
+    ConcurrentQueue<LogMessage>* message_list;
+    Azgard::Thread* logger_thread;
 
-    static void run(void* data);
-    static void stopLoggerThread();
-
+    void run(void* data);
+    void stopLoggerThread();
+    Logger();
+    ~Logger();
 public:
     /**
      * @brief Logs a formated string
      */
-    static void logLine(LogMessageType type, LogChannel chanel, const char* fmt, ...);
+    void logLine(LogMessageType type, LogChannel chanel, const char* fmt, ...);
+    void waitPendingMessages();
+
     static void startUp();
-    static void waitPendingMessages();
     static void shutDown(bool force = false);
 };
 
 }
 
 #ifdef AZGARD_DEBUG_BUILD
-#define AZG_LOG_DEBUG(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
-#define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::logLine(Azgard::LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG(fmt, ...) Azgard::Logger::getSingletonPtr()->logLine(Azgard::LogMessageType::DEBUG, Azgard::LogChannel::CORE_CHANNEL, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_DEBUG(chanel, fmt, ...) Azgard::Logger::getSingletonPtr()->logLine(Azgard::LogMessageType::DEBUG, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_ERROR(chanel, fmt, ...) Azgard::Logger::getSingletonPtr()->logLine(Azgard::LogMessageType::ERROR, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
+#define AZG_LOG_WARNING(chanel, fmt, ...) Azgard::Logger::getSingletonPtr()->logLine(Azgard::LogMessageType::WARNING, chanel, fmt __VA_OPT__(,) __VA_ARGS__)
 #else
+#define AZG_LOG(fmt, ...) 
 #define AZG_LOG_DEBUG(chanel, fmt, ...) 
 #define AZG_LOG_ERROR(chanel, fmt, ...)
 #define AZG_LOG_WARNING(chanel, fmt, ...)

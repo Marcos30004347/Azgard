@@ -1,6 +1,6 @@
 #include "Assert.hpp"
 
 void Azgard::abort() {
-    throw;
+    throw -1;
 }
 

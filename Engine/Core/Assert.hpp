@@ -3,7 +3,6 @@
 
 #include "Debug/Logger.hpp"
 #include "Debug/Debugger.hpp"
-
 namespace Azgard {
 
 void abort();
@@ -12,7 +11,7 @@ void abort();
 
 #define AZG_CORE_ASSERT_AND_REPORT(exp, error_message, ...) \
     do { \
-        if (!(exp)) { \
+        if (!static_cast<bool>(exp)) { \
             AZG_LOG_ERROR(LogChannel::CORE_CHANNEL, error_message __VA_OPT__(,) __VA_ARGS__); \
             AZG_TRIGGER_BREAKPOINT; \
             abort(); \
@@ -22,7 +21,7 @@ void abort();
 
 #define AZG_CORE_ASSERT(exp) \
     do { \
-        if (!(exp)) { \
+        if (!static_cast<bool>(exp)) { \
             AZG_TRIGGER_BREAKPOINT; \
             abort(); \
         } \

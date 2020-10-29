@@ -12,7 +12,7 @@ String::String(const char* text) {
 
     unsigned int string_len = Azgard::cStrLen(text);
 
-    _data = (char*)Azgard::allocBytes(string_len);
+    _data = (char*)Azgard::allocBytes(string_len, __FILE__, __LINE__);
 
     Azgard::copyBytes((void*)text, _data, string_len);
 
@@ -25,7 +25,7 @@ String::String(const char* text) {
 
 String::String(char* text, unsigned int size) {
     AZG_DEBUG_SCOPE
-    _data = (char*)Azgard::allocBytes(size + 1);
+    _data = (char*)Azgard::allocBytes(size + 1, __FILE__, __LINE__);
     for(int i=0; i<size; i++) _data[i] = text[i];
     _data[size] = '\0';
     this->_length = size;
@@ -43,6 +43,14 @@ String::~String() {
     if(_data) {
         delete _data;
     }
+}
+
+void Azgard::cStrCpy(char* src, char* dest){
+    unsigned int s = 0;
+    do {
+        dest[s] = src[s];
+        s++;
+    } while(src[s] != '\0');
 }
 
 

@@ -29,6 +29,7 @@ include(ThirdParty/crc.cmake)
 include(ThirdParty/rapidjson.cmake)
 include(ThirdParty/rapidxml.cmake)
 include(ThirdParty/tracy.cmake)
+include(ThirdParty/stb.cmake)
 
 # Set output directories (some dependencie can change those variables)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "")
@@ -62,12 +63,16 @@ Engine/Debug/Debugger.cpp
 Engine/Debug/Logger.cpp
 
 #Library
+Engine/Library/LibraryManager.cpp
 Engine/Library/SpinLock.cpp
 Engine/Library/Window.cpp
 Engine/Library/Name.cpp
 Engine/Library/String.cpp
-Engine/Library/File.cpp
 Engine/Library/Thread.cpp
+
+#File
+Engine/File/FileManager.cpp
+Engine/File/FileHandle.cpp
 
 #File Formats
 Engine/Format/Xml.cpp
@@ -99,6 +104,7 @@ link_crc_on_target(azgard)
 link_rapidjson_on_target(azgard)
 link_rapidxml_on_target(azgard)
 link_tracy_on_target(azgard)
+link_stb_headers_on_target(azgard)
 
 
 add_subdirectory(Sandbox)

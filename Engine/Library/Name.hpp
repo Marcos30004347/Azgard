@@ -2,27 +2,37 @@
 #define AZGARD_LIB_NAME
 
 #include "Core/Engine.hpp"
-#include "Concurrent/ConcurrentHashTable.hpp"
+#include "Library/String.hpp"
 
 namespace Azgard {
 
 class Name {
-    ConcurrentHashTable<const char*>::Ref reference;
-    static ConcurrentHashTable<const char*>* NameHashTable;
+    class HashTableKey {
+    public:
+        long unsigned int hash = -1;
+        long unsigned int index = -1;
+        friend class Name;
+    };
+
+    HashTableKey key;
 
     static void startUpNameHashTable();
     static void shutDownNameHashTable();
 
-    friend class Engine;
+    friend class LibraryManager;
 public:
     const char* value() noexcept;
 
     Name();
-
-    Name(const char* string);
+    Name(const char* const string); // constructor
+    Name(const Name& other); // copy constructor
+    Name(Name&& other); // move constructor
     ~Name();
 
-    Name& operator = (Name& other) noexcept;
+    Name& operator = (Name&& other) noexcept; // move assignment
+    Name& operator = (const Name& other) noexcept; // copy assignment
+
+    bool operator == (const char* other);
     bool operator == (Name& other) noexcept;
 };
 

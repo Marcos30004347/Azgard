@@ -81,7 +81,6 @@ public:
 #elif
 
 
-
 #define AZG_DEBUG_MALLOC(ptr, size)
 #define AZG_DEBUG_FREE(prt)
 #define AZG_DEBUG_SCOPE_NAMED(name)

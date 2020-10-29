@@ -2,6 +2,7 @@
 #define AZGARD_LIB_TIME_MANGAER
 
 #include "Core/Engine.hpp"
+#include "Library/Singleton.hpp"
 
 namespace Azgard {
 
@@ -15,13 +16,17 @@ struct Date {
     long long milliseconds;
 };
 
-class TimeManager {
-    static long programStart;
+class TimeManager: public Singleton<TimeManager> {
+    long programStart;
+
+    TimeManager();
+    ~TimeManager();
 public:
-    AZG_API static void sleepFor(long long ms);
-    AZG_API static long getMillisecondsSinseEpoch() noexcept;
-    AZG_API static long getProgramMilliseconds() noexcept;
-    AZG_API static Date getCurrentDate();
+    void sleepFor(long long ms);
+    long getMillisecondsSinseEpoch() noexcept;
+    long getProgramMilliseconds() noexcept;
+    Date getCurrentDate();
+    Date getDate(long milliseconds);
 
     static void startUp();
     static void shutDown();

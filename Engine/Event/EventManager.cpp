@@ -13,11 +13,6 @@ inline KeyMode azgardKeyModeToSDLKeyMode(Uint16 mod) {
     return (KeyMode)mod;
 }
 
-
-
-Thread* EventManager::eventWorker = nullptr;
-bool EventManager::shoudPoolEvents = true;
-
 void EventManager::eventWorkerRun(void* data) {
     while (true) {
         SDL_Event event;
@@ -27,7 +22,7 @@ void EventManager::eventWorkerRun(void* data) {
             case SDL_KEYDOWN:
                 keyPressedEvent.type = 1;
                 keyPressedEvent.keyCode = azgardKeyCodeToSDLKeyCode(event.key.keysym.sym);
-                keyPressedEvent.timestamp = TimeManager::getProgramMilliseconds();
+                keyPressedEvent.timestamp = TimeManager::getSingletonPtr()->getProgramMilliseconds();
                 keyPressedEvent.mode = azgardKeyModeToSDLKeyMode(event.key.keysym.mod);
                 keyPressedEvent.repeat = event.key.repeat;
                 keyPressedEvent.windowID = event.key.windowID;
@@ -39,7 +34,7 @@ void EventManager::eventWorkerRun(void* data) {
             case SDL_KEYUP:
                 keyPressedEvent.type = 0;
                 keyPressedEvent.keyCode = azgardKeyCodeToSDLKeyCode(event.key.keysym.sym);
-                keyPressedEvent.timestamp = TimeManager::getProgramMilliseconds();
+                keyPressedEvent.timestamp = TimeManager::getSingletonPtr()->getProgramMilliseconds();
                 keyPressedEvent.mode = azgardKeyModeToSDLKeyMode(event.key.keysym.mod);
                 keyPressedEvent.repeat = event.key.repeat;
                 keyPressedEvent.windowID = event.key.windowID;
@@ -58,14 +53,22 @@ void EventManager::eventWorkerRun(void* data) {
     }
 }
 
+EventManager::EventManager() {
+    this->shoudPoolEvents = true;
+    this->eventWorker = AZG_NEW Thread(EventManager::eventWorkerRun, nullptr);
+}
+
+EventManager::~EventManager() {
+    this->shoudPoolEvents = false;
+    this->eventWorker->join();
+    delete this->eventWorker;
+}
+
 void EventManager::startUp() {
     AZG_CORE_ASSERT_AND_REPORT(SDL_Init(SDL_INIT_EVENTS) != 0, "SDL Events Not initialized correctly!");
-    EventManager::shoudPoolEvents = true;
-    EventManager::eventWorker = new Thread(EventManager::eventWorkerRun, nullptr);
+    EventManager::gInstancePtr = AZG_NEW EventManager();
 }
 
 void EventManager::shutDown(){
-    EventManager::shoudPoolEvents = false;
-    EventManager::eventWorker->join();
-    delete EventManager::eventWorker;
+    delete EventManager::gInstancePtr;
 }

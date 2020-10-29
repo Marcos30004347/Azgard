@@ -3,15 +3,31 @@
 
 #include "Core/Engine.hpp"
 
+
 namespace Azgard {
     
 class Engine {
+    static void startUp();
+    static void shutDown();
 public:
-    AZG_API static void startUp();
-    AZG_API static void shutDown();
+    Engine();
+    ~Engine();
 };
 
 }
+
+
+
+
+// #define AZGARD_SETUP() \
+// static constructor(initEngine); \
+// void initEngine() { \
+//     Azgard::Engine::startUp(); \
+// }\
+// static destructor(shutDownEngine); \
+// void shutDownEngine() { \
+//     Azgard::Engine::shutDown(); \
+// } \
 
 
 #endif

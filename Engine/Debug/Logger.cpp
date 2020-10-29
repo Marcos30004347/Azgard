@@ -1,8 +1,10 @@
 #include "Logger.hpp"
 #include "Debugger.hpp"
 #include "Runtime/TimeManager.hpp"
+#include "Library/String.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <stdio.h>
 #include <cstdarg>
 
@@ -28,9 +30,53 @@ const char* defaultBackgroundColor() {return "\033[49m"; }
 
 using namespace Azgard;
 
-Azgard::ConcurrentQueue<LogMessage>* Logger::message_list  = nullptr;
-Azgard::Thread* Logger::logger_thread = nullptr;
-bool Logger::shouldLoggerLog = true;
+#define AZGARD_LOG_SYNC
+
+void logMessage(LogMessage& message) {
+    Date date = TimeManager::getSingletonPtr()->getDate(message.time);
+
+    const char* color;
+
+    switch (message.type)
+    {
+    case LogMessageType::DEBUG:
+        color = greenForegroundColor();
+        break;
+    case LogMessageType::WARNING:
+        color = yellowForegroundColor();
+        break;
+    case LogMessageType::ERROR:
+        color = redForegroundColor();
+        break;
+    default:
+        color = defaultForegroundColor();
+        break;
+    }
+
+    std::stringstream stream("");
+
+    stream <<
+    defaultForegroundColor() <<
+    "[" <<
+    LogChannelNames[message.chanel] <<
+    " " <<
+    date.hour <<
+    ":" <<
+    date.minutes <<
+    ":" <<
+    date.seconds <<
+    "]: " <<
+    color <<
+    message.message <<
+    defaultForegroundColor() <<
+    "\n";
+
+    printf("%s", stream.str().c_str());
+    #if defined(TRACY_ENABLE)
+    TracyMessage(stream.str().c_str(), stream.str().size());
+    #endif
+    delete message.message;
+}
 
 void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, ...) {
     #if defined(AZGARD_DEBUG_BUILD)
@@ -38,24 +84,24 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
     va_list arg;
     
     va_start (arg, fmt);
-    char* buffer = new char[512];
+    char* buffer = AZG_NEW char[512];
 
     vsprintf(buffer, fmt, arg);
     va_end (arg);
+
     LogMessage message = LogMessage();
 
     message.message = buffer;
-    message.time = TimeManager::getMillisecondsSinseEpoch();
+    message.time = TimeManager::getSingletonPtr()->getMillisecondsSinseEpoch();
     message.chanel = chanel;
-    message.size = 0;
+    message.size = Azgard::cStrLen(buffer);
     message.type = type;
 
-    Logger::message_list->pushBack(message);
-
-
-    // #if defined(TRACY_ENABLE)
-    // TracyMessage(buffer, size);
-    // #endif
+    #ifdef AZGARD_LOG_SYNC
+    logMessage(message);
+    #else
+    Logger::getSingletonPtr()->message_list->pushBack(message);
+    #endif
 
     // std::cout << "LOGLINE" << std::endl;
     #endif
@@ -63,58 +109,25 @@ void Logger::logLine(LogMessageType type, LogChannel chanel, const char * fmt, .
 
 
 void Logger::run(void *data) {
-    #if defined(AZGARD_DEBUG_BUILD)
+    
+    #if defined(AZGARD_DEBUG_BUILD) && !defined(AZGARD_LOG_SYNC)
     AZG_DEBUGGER_SET_THREAD_NAME("DebuggerThread")
 
     LogMessage* tmp = nullptr;
     const char* color = defaultForegroundColor();
 
-    while(Logger::shouldLoggerLog) {
-        if(Logger::shouldLoggerLog == false) break;
-        while((Logger::message_list->size() == 0) && (Logger::shouldLoggerLog == true)) {
+    while(Logger::getSingletonPtr()->shouldLoggerLog) {
+        if(Logger::getSingletonPtr()->shouldLoggerLog == false) break;
+        while((Logger::getSingletonPtr()->message_list->size() == 0) && (Logger::shouldLoggerLog == true)) {
             Azgard::Thread::thisThread::yield();
         }
     
-        if(Logger::message_list->size() > 0){
+        if(Logger::getSingletonPtr()->message_list->size() > 0){
 
             AZG_DEBUG_SCOPE_NAMED("log message")
             
-            LogMessage message = Logger::message_list->popFront();
-        
-            switch (message.type)
-            {
-            case LogMessageType::DEBUG:
-                color = greenForegroundColor();
-                break;
-            case LogMessageType::WARNING:
-                color = yellowForegroundColor();
-                break;
-            case LogMessageType::ERROR:
-                color = redForegroundColor();
-                break;
-            default:
-                color = defaultForegroundColor();
-                break;
-            }
-
-            Date date = TimeManager::getCurrentDate();
-
-            std::cout <<
-            defaultForegroundColor() <<
-            "[" <<
-            LogChannelNames[message.chanel] <<
-            " " <<
-            date.hour <<
-            ":" <<
-            date.minutes <<
-            ":" <<
-            date.seconds <<
-            "]: " <<
-            color <<
-            message.message <<
-            defaultForegroundColor() <<
-            std::endl;
-            delete message.message;
+            LogMessage message = Logger::getSingletonPtr()->message_list->popFront();
+            logMessage(message);
         }
 
     }  
@@ -122,14 +135,28 @@ void Logger::run(void *data) {
 
 }
 
+Logger::Logger() {
+    #if defined(AZGARD_DEBUG_BUILD) && !defined(AZGARD_LOG_SYNC)
+    this->shouldLoggerLog = true;
+    this->message_list = AZG_NEW Azgard::ConcurrentQueue<LogMessage>();
+    this->logger_thread = AZG_NEW Azgard::Thread(Logger::run, nullptr);
+    #endif
+}
+Logger::~Logger() {
+    #ifndef AZGARD_LOG_SYNC
+
+    delete Logger::getSingletonPtr()->message_list;
+
+    Logger::getSingletonPtr()->stopLoggerThread();
+    Logger::getSingletonPtr()->logger_thread->join();
+    Logger::getSingletonPtr()->logger_thread->close();
+
+    delete Logger::getSingletonPtr()->logger_thread;
+    #endif
+}
 
 void Logger::startUp(){
-    #if defined(AZGARD_DEBUG_BUILD)
-    Logger::shouldLoggerLog = true;
-    Logger::message_list = new Azgard::ConcurrentQueue<LogMessage>();
-    Logger::logger_thread = new Azgard::Thread(Logger::run, nullptr);
-    #endif
-
+    Logger::gInstancePtr = new Logger();
 }
 
 void Logger::stopLoggerThread() {
@@ -141,27 +168,18 @@ void Logger::stopLoggerThread() {
 
 void Logger::waitPendingMessages() {
     // Wait untial all log messages have been logged
-    while(Logger::message_list->size()) {
+    #ifndef AZGARD_LOG_SYNC
+    while(Logger::getSingletonPtr()->message_list->size()) {
         // When the job system kicks out we should probably use other strategy here
         Azgard::Thread::thisThread::yield();
     }
+    #endif
 }
 
 
 void Logger::shutDown(bool force) {
-    // #if defined(AZGARD_DEBUG_BUILD)
-
     if(!force) {
-        Logger::waitPendingMessages();
-    } else {
-        delete Logger::message_list;
+        Logger::getSingletonPtr()->waitPendingMessages();
     }
-
-    Logger::stopLoggerThread();
-    Logger::logger_thread->join();
-    Logger::logger_thread->close();
-    // delete logger_thread;
-    AZG_LOG_DEBUG(LogChannel::CORE_CHANNEL, "ASDASDSDSD");
-
-    // #endif
+    delete Logger::gInstancePtr;
 };

@@ -16,10 +16,10 @@ private:
     class Item {
     public:
         // TODO: Alocate Items from pool.
-        T value;
+        T& value;
         Item* next = nullptr;
         Item* parent = nullptr;
-
+        Item(T& element): value{element} {}
         // void* operator new(long unsigned int size) { 
         //     return Azgard::MemoryManager::mallocFromGlobalPool(size); 
         // }
@@ -54,8 +54,7 @@ public:
         
         this->lock.lock();
 
-        Item* tmp = new Item();
-        tmp->value = element;
+        Item* tmp = new Item(element);
         tmp->parent = this->tail;
 
         if(!this->top) this->top = tmp;

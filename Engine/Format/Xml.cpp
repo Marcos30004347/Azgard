@@ -1,6 +1,5 @@
 #include "Xml.hpp"
 
-#include <cstring>
 #include <iostream>
 #include <sstream>
 
@@ -10,149 +9,148 @@ using namespace Azgard;
 
 XmlAttribute::XmlAttribute(rapidxml::xml_attribute<>* attribute): attribute{attribute} {}
 
-AZG_API XmlAttribute::XmlAttribute(const XmlAttribute& other) {
-    memcpy(this->attribute, other.attribute, sizeof(rapidxml::xml_attribute<>));
+XmlAttribute::XmlAttribute(const XmlAttribute& other) {
+    Azgard::copyBytes(other.attribute, this->attribute, sizeof(rapidxml::xml_attribute<>));
 }
 
-AZG_API XmlAttribute XmlAttribute::next(const char* key) {
+XmlAttribute XmlAttribute::next(const char* key) {
     return XmlAttribute(this->attribute->next_attribute(key));
 }
 
-AZG_API const char* XmlAttribute::readAsText() {
+const char* XmlAttribute::readAsText() {
     return this->attribute->value();
 }
 
-AZG_API int XmlAttribute::readAsInt() {
+int XmlAttribute::readAsInt() {
     return atoi(this->attribute->value());
 }
 
-AZG_API long int XmlAttribute::readAsLongInt() {
+long int XmlAttribute::readAsLongInt() {
     return atol(this->attribute->value());
 }
 
-AZG_API long long int XmlAttribute::readAsLongLongInt() {
+long long int XmlAttribute::readAsLongLongInt() {
     return atoll(this->attribute->value());
 }
 
-AZG_API float XmlAttribute::readAsFloat() {
+float XmlAttribute::readAsFloat() {
     return atof(this->attribute->value());
 }
 
-AZG_API const char* XmlAttribute::name() {
+const char* XmlAttribute::name() {
     return this->attribute->name();
 }
 
-AZG_API XmlNode::XmlNode(rapidxml::xml_node<>* node, rapidxml::xml_document<>* doc): node{node}, doc{doc} {}
+XmlNode::XmlNode(rapidxml::xml_node<>* node, rapidxml::xml_document<>* doc): node{node}, doc{doc} {}
 
-AZG_API XmlNode::XmlNode(const XmlNode& other) {
-    memcpy(this->node, other.node, sizeof(rapidxml::xml_node<>));
+XmlNode::XmlNode(const XmlNode& other) {
+    Azgard::copyBytes(other.node, this->node, sizeof(rapidxml::xml_node<>));
 }
 
-AZG_API XmlNode XmlNode::firstNode(const char* key) {
+XmlNode XmlNode::firstNode(const char* key) {
     return XmlNode(this->node->first_node(key), this->doc);
 }
 
-AZG_API XmlNode XmlNode::nextSibling(const char* key) {
+XmlNode XmlNode::nextSibling(const char* key) {
     return XmlNode(this->node->next_sibling(), this->doc);
 }
 
-AZG_API XmlNode XmlNode::appendNode(XmlNodeType type, const char* name, const char* value) {
+XmlNode XmlNode::appendNode(XmlNodeType type, const char* name, const char* value) {
     char *node_name = doc->allocate_string(name);
     rapidxml::xml_node<> *node_ = this->doc->allocate_node((rapidxml::node_type)type, node_name, value);
     this->node->append_node(node_);
     return XmlNode(node_, this->doc);
 }
 
-AZG_API XmlNode XmlNode::insertNode(XmlNode& where, XmlNodeType type, const char* name, const char* value) {
+XmlNode XmlNode::insertNode(XmlNode& where, XmlNodeType type, const char* name, const char* value) {
     char *node_name = doc->allocate_string(name);
     rapidxml::xml_node<> *node_ = this->doc->allocate_node((rapidxml::node_type)type, node_name, value);
     this->node->insert_node(where.node, node_);
     return XmlNode(node_, this->doc);
 }
 
-AZG_API void XmlNode::removeNode(XmlNode& node) {
+void XmlNode::removeNode(XmlNode& node) {
     this->node->remove_node(node.node);
     node.node = nullptr;
 }
 
-AZG_API XmlAttribute XmlNode::getAttribute(const char* attribute) {
+XmlAttribute XmlNode::getAttribute(const char* attribute) {
     return XmlAttribute(this->node->first_attribute(attribute));
 }
 
-AZG_API XmlAttribute XmlNode::addAttribute(const char* name, const char* value) {
+XmlAttribute XmlNode::addAttribute(const char* name, const char* value) {
     rapidxml::xml_attribute<> *attr = this->doc->allocate_attribute(name, value);
     this->node->append_attribute(attr);
     return XmlAttribute(attr);
 }
 
-AZG_API void XmlNode::removeAttribute(XmlAttribute& att) {
+void XmlNode::removeAttribute(XmlAttribute& att) {
     this->node->remove_attribute(att.attribute);
     att.attribute = nullptr;
 }
 
-AZG_API const char* XmlNode::readAsText() {
+const char* XmlNode::readAsText() {
     return this->node->value();
 }
 
-AZG_API int XmlNode::readAsInt() {
+int XmlNode::readAsInt() {
     return atoi(this->node->value());
 }
 
-AZG_API long int XmlNode::readAsLongInt() {
+long int XmlNode::readAsLongInt() {
     return atol(this->node->value());
 }
 
-AZG_API long long int XmlNode::readAsLongLongInt() {
+long long int XmlNode::readAsLongLongInt() {
     return atoll(this->node->value());
 }
 
-AZG_API float XmlNode::readAsFloat() {
+float XmlNode::readAsFloat() {
     return atof(this->node->value());
 }
 
-AZG_API const char* XmlNode::name() {
+const char* XmlNode::name() {
     return this->node->name();
 }
 
 
-AZG_API XmlDocument::XmlDocument(File* file) {
+XmlDocument::XmlDocument(FileHandle& file) {
     // TODO: not use std::string
     this->doc = new rapidxml::xml_document<>();
-    std::string str (file->getBuffer());
-    xml_raw = new char[str.size()];
-    strcpy (xml_raw, str.c_str());
+    String str = file.syncRead(0, file.getFileSize());
+    xml_raw = new char[str.length()];
+    Azgard::cStrCpy((char*)str.cString(), xml_raw);
     doc->parse<0>(xml_raw);  
 }
 
-AZG_API XmlDocument::XmlDocument(const char* src) {
+XmlDocument::XmlDocument(String src) {
     this->doc = new rapidxml::xml_document<>();
-    std::string str (src);
-    xml_raw = new char[str.size()];
-    strcpy (xml_raw, str.c_str());
+    xml_raw = new char[src.length()];
+    Azgard::cStrCpy((char*)src.cString(), xml_raw);
     doc->parse<0>(xml_raw);  
 }
 
-AZG_API XmlDocument::~XmlDocument() {
+XmlDocument::~XmlDocument() {
     delete xml_raw;
     delete doc;
 }
 
-AZG_API XmlNode XmlDocument::firstNode(const char* key) {
+XmlNode XmlDocument::firstNode(const char* key) {
     return XmlNode(doc->first_node(key), this->doc);
 }
 
-AZG_API XmlNode XmlDocument::appendNode(XmlNodeType type, const char* name, const char* value) {
+XmlNode XmlDocument::appendNode(XmlNodeType type, const char* name, const char* value) {
     char *node_name = doc->allocate_string(name);
     rapidxml::xml_node<> *node = this->doc->allocate_node((rapidxml::node_type)type, node_name, value);
     this->doc->append_node(node);
     return XmlNode(node, this->doc);
 }
 
-AZG_API void XmlDocument::save(File* handle) {
+void XmlDocument::save(FileHandle handle) {
     std::stringstream stream;
     std::ostream_iterator<char> iter(stream);
 
     rapidxml::print(iter, *doc);
 
-    handle->write(stream.str());
+    handle.syncWrite(stream.str().c_str());
 }

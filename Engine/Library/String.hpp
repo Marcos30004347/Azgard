@@ -7,6 +7,7 @@ namespace Azgard {
 
 unsigned int cStrLen(const char* str);
 bool cStrCmp(const char* a, const char* b);
+void cStrCpy(char* src, char* dest);
 long int hashCStr(const char *s);
 
 class String {

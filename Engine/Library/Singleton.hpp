@@ -1,35 +1,21 @@
 #ifndef AZGARD_LIB_SINGLETON
 #define AZGARD_LIB_SINGLETON
 
-namespace Azgard {
+#include "Core/Engine.hpp"
 
 template<typename T>
 class Singleton {
+protected:
+    static T* gInstancePtr;
 public:
-    static void startUp() {
-        singleton_ptr = new T();
-    }
 
-    static void shutDown() {
-        delete singleton_ptr;
+    static T* getSingletonPtr() {
+        // AZG_CORE_ASSERT_AND_REPORT(gInstancePtr != nullptr, "Singleton not started!");
+        return Singleton<T>::gInstancePtr;
     }
-
-    static T* getSingletonPointer() {
-        return singleton_ptr;
-    }
-
-    static T getSingletonInstance() {
-        return *singleton_ptr;
-    }
-
-private:
-    static T* singleton_ptr;
 };
 
 template<typename T>
-T* Singleton<T>::singleton_ptr = nullptr;
-
-}
-
+T* Singleton<T>::gInstancePtr = nullptr;
 
 #endif
