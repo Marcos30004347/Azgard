@@ -8,10 +8,10 @@ AST* initAST(AST::type type) {
     ast->scope = nullptr;
 
     // AST_FUNCTION_DEFINITION
-    ast->function_body = nullptr;
-    ast->function_name = nullptr;
-    ast->function_arguments = nullptr;
-    ast->function_arguments_count = 0;
+    ast->func_definition_body = nullptr;
+    ast->func_definition_name = nullptr;
+    ast->func_definition_arguments = nullptr;
+    ast->func_definition_arguments_count = 0;
 
     // AST_VARIABLE_DEFINITION
     ast->var_def_name = nullptr;
@@ -31,6 +31,8 @@ AST* initAST(AST::type type) {
     // AST_COMPOUND
     AST** compound_value = nullptr;
     unsigned int compound_size = 0;
+    
+    return ast;
 }
 
 

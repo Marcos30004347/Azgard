@@ -85,6 +85,13 @@ Engine/Memory/MemoryManager.cpp
 
 #Event
 Engine/Event/EventManager.cpp
+
+#Renderer
+Engine/Renderer/Shader/AST.cpp
+Engine/Renderer/Shader/Lexer.cpp
+Engine/Renderer/Shader/Parser.cpp
+Engine/Renderer/Shader/Visitor.cpp
+Engine/Renderer/Shader/Scope.cpp
 )
 
 # Public include directories

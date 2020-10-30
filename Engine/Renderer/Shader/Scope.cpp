@@ -30,7 +30,7 @@ AST* scopeAddFunctionDefinition(Scope* scope, AST* node) {
 
 AST* scopeGetFunctionDefinition(Scope* scope, const char* fname) {
     for(int i=0; i<scope->functions_definitions_count; i++) {
-        if(strcmp(scope->function_definitions[i]->function_name, fname) == 0) {
+        if(strcmp(scope->function_definitions[i]->func_definition_name, fname) == 0) {
             return scope->function_definitions[i];
         }
     }

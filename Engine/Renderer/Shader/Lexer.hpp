@@ -9,9 +9,10 @@ struct Lexer {
     char c;
 };
 
+
 struct Token {
 
-    enum type {
+    enum TokenType {
         ID,
         EQUALS,
         STRING,
@@ -24,9 +25,11 @@ struct Token {
         PERIOD,
         TOKEN_EOF,
     };
-    type token_type;
+
+    TokenType token_type;
     char* value;
 };
+
 
 
 void lexerAdvance(Lexer* lex);
@@ -36,7 +39,7 @@ char* lexerGetCurrentCharAsString(Lexer* lex);
 
 Lexer* initLexer(char* contents);
 
-Token* initToken(Token::type type, char* value);
+Token* initToken(Token::TokenType type, char* value);
 Token* lexerAdvanceWithToken(Lexer* lex, Token* tok);
 Token* lexerCollectString(Lexer* lex);
 Token* lexerCollectId(Lexer* lex);

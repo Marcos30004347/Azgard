@@ -15,7 +15,7 @@ Lexer* initLexer(char* contents) {
     return lex;
 }
 
-Token* initToken(Token::type type, char* value) {
+Token* initToken(Token::TokenType type, char* value) {
     Token* tok = (Token*)calloc(1, sizeof(Token));
     tok->value = value;
     tok->token_type = type;
@@ -59,12 +59,14 @@ Token* lexerCollectString(Lexer* lex) {
     }
 
     lexerAdvance(lex); // advance because of '"'
-    return initToken(Token::type::STRING, value);
+    return initToken(Token::TokenType::STRING, value);
 }
 
 Token* lexerCollectId(Lexer* lex) {
+
     char* value = (char*)calloc(1, sizeof(char));
     value[0] = '\0';
+
     while(isalnum(lex->c)) {
         char* s = lexerGetCurrentCharAsString(lex);
         value = (char*)realloc(value, (strlen(value) + strlen(s) + 1)*sizeof(char));
@@ -72,7 +74,7 @@ Token* lexerCollectId(Lexer* lex) {
         lexerAdvance(lex);
     }
 
-    return initToken(Token::type::ID, value);
+    return initToken(Token::TokenType::ID, value);
 }
 
 Token* lexerGetNextToken(Lexer* lex) {
@@ -81,17 +83,19 @@ Token* lexerGetNextToken(Lexer* lex) {
         if(isalnum(lex->c)) return lexerCollectId(lex);
         if(lex->c == '"') return lexerCollectString(lex);
         switch (lex->c) {
-            case '=': return lexerAdvanceWithToken(lex, initToken(Token::type::EQUALS, lexerGetCurrentCharAsString(lex))); break;
-            case '(': return lexerAdvanceWithToken(lex, initToken(Token::type::OPEN_PARENTESIS, lexerGetCurrentCharAsString(lex))); break;
-            case ')': return lexerAdvanceWithToken(lex, initToken(Token::type::CLOSE_PARENTESIS, lexerGetCurrentCharAsString(lex))); break;
-            case ';': return lexerAdvanceWithToken(lex, initToken(Token::type::SEMICOLON, lexerGetCurrentCharAsString(lex))); break;
-            case '{': return lexerAdvanceWithToken(lex, initToken(Token::type::OPEN_BRACKET, lexerGetCurrentCharAsString(lex))); break;
-            case '}': return lexerAdvanceWithToken(lex, initToken(Token::type::CLOSE_BRACKET, lexerGetCurrentCharAsString(lex))); break;
-            case ',': return lexerAdvanceWithToken(lex, initToken(Token::type::COMMA, lexerGetCurrentCharAsString(lex))); break;
-            case '.': return lexerAdvanceWithToken(lex, initToken(Token::type::PERIOD, lexerGetCurrentCharAsString(lex))); break;
+            case '=': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::EQUALS, lexerGetCurrentCharAsString(lex))); break;
+            case '(': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_PARENTESIS, lexerGetCurrentCharAsString(lex))); break;
+            case ')': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_PARENTESIS, lexerGetCurrentCharAsString(lex))); break;
+            case ';': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::SEMICOLON, lexerGetCurrentCharAsString(lex))); break;
+            case '{': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::OPEN_BRACKET, lexerGetCurrentCharAsString(lex))); break;
+            case '}': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::CLOSE_BRACKET, lexerGetCurrentCharAsString(lex))); break;
+            case ',': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::COMMA, lexerGetCurrentCharAsString(lex))); break;
+            case '.': return lexerAdvanceWithToken(lex, initToken(Token::TokenType::PERIOD, lexerGetCurrentCharAsString(lex))); break;
             default: break;
         }
     }
+    char* nullString = new char[1];
+    nullString[0] = '\0';
 
-    return initToken(Token::type::TOKEN_EOF, "");
+    return initToken(Token::TokenType::TOKEN_EOF, nullString);
 }

@@ -41,7 +41,7 @@ static AST* buildInPrint(Visitor* visitor, AST** args, int arg_size) {
     for(int i=0; i< arg_size; i++) {
         AST* visited = visit(visitor, args[i]);
         switch (visited->ast_type) {
-            case AST::type::AST_STRING: printf("visited arg: %s\n", visited->string_value); return;
+            case AST::type::AST_STRING: printf("visited arg: %s\n", visited->string_value); break;
             default: break;
         }
     }
@@ -64,10 +64,10 @@ AST* visitFunctionCall(Visitor* visitor, AST* node) {
     }
     
     // parse arguments
-    for(int i=0; i<func->function_arguments_count; i++) {
+    for(int i=0; i<func->func_definition_arguments_count; i++) {
         AST* ast_var_definition = initAST(AST::type::AST_VARIABLE_DEFINITION);
         
-        AST* var = func->function_arguments[i];
+        AST* var = func->func_definition_arguments[i];
     
         ast_var_definition->var_def_name = (char*)malloc(sizeof(char)*(strlen(var->var_name) + 1));
         strcpy(ast_var_definition->var_def_name, var->var_name);
@@ -84,7 +84,7 @@ AST* visitFunctionCall(Visitor* visitor, AST* node) {
     }
 
 
-    visit(visitor, func->function_body);
+    return visit(visitor, func->func_definition_body);
 
 }
 

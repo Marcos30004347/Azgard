@@ -19,11 +19,15 @@ struct AST {
     type ast_type;
 
     // AST_FUNCTION_DEFINITION
-    AST* function_body;
-    char* function_name;
+    AST* func_definition_body;
+    char* func_definition_name;
+    AST** func_definition_arguments;
+    unsigned int func_definition_arguments_count;
 
-    AST** function_arguments;
-    unsigned int function_arguments_count;
+    // AST_FUNCTION_CALL
+    char* func_call_name;
+    AST** func_call_arguments;
+    unsigned int func_call_arguments_count;
 
     // AST_VARIABLE_DEFINITION
     char* var_def_name;
@@ -31,11 +35,6 @@ struct AST {
 
     // AST_VARIABLE
     char* var_name;
-
-    // AST_FUNCTION_CALL
-    char* func_call_name;
-    AST** func_call_arguments;
-    unsigned int func_call_arguments_count;
 
     // AST_STRING
     char* string_value;
