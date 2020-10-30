@@ -1,11 +1,8 @@
-
 #include "AST.hpp"
 #include "Lexer.hpp"
-#include "Scope.hpp"
 
 #ifndef PARSER_H
 #define PARSER_H
-
 
 struct Parser {
     Lexer* lexex;

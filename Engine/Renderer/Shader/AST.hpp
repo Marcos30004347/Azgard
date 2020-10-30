@@ -49,5 +49,5 @@ struct AST {
 
 AST* initAST(AST::type type);
 
-
+void printAST(AST* root);
 #endif

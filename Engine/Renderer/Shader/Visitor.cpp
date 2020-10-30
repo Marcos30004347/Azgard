@@ -77,7 +77,7 @@ AST* visitFunctionCall(Visitor* visitor, AST* node) {
         ast_var_definition->var_def_value = value;
 
         // Add var to scope
-        scopeAddFunctionDefinition(
+        scopeAddVariableDefinition(
             func->scope,
             ast_var_definition
         );

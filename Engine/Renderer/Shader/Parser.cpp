@@ -1,4 +1,6 @@
 #include "Parser.hpp"
+#include "Scope.hpp"
+
 #include <malloc.h>
 #include <string.h>
 #include <stdio.h>
@@ -36,8 +38,8 @@ Parser* initParser(Lexer* lexer) {
 
 
 void parserEat(Parser* parser, int expected_token_type) {
-    printf("#Eating: %s\n", TokenTypeNames[expected_token_type]);
-    printf("#Value: %s\n", parser->current_token->value);
+    // printf("#Eating: %s\n", TokenTypeNames[expected_token_type]);
+    // printf("#Value: %s\n", parser->current_token->value);
 
     if(parser->current_token->token_type == expected_token_type) {
         parser->previous_token = parser->current_token;
@@ -81,7 +83,7 @@ AST* parseStatment(Parser* parser, Scope* scope) {
 
 // Parse all statements
 AST* parseStatments(Parser* parser, Scope* scope) {
-    printf("***Parsing Statements...\n");
+    // printf("***Parsing Statements...\n");
 
     AST* compound = initAST(AST::type::AST_COMPOUND);
     compound->scope = scope;
@@ -107,21 +109,17 @@ AST* parseStatments(Parser* parser, Scope* scope) {
         
         compound->compound_value[ compound->compound_size - 1] = statement;
     } 
-    printf("***Parsed Statements!\n");
+    // printf("***Parsed Statements!\n");
 
     return compound;
 }
 
 AST* parseExpresion(Parser* parser, Scope* scope) {
-    printf("=====>Parsing Expression...\n");
-
     switch (parser->current_token->token_type) {
         case Token::TokenType::STRING: return parseString(parser, scope);
         case Token::TokenType::ID: return parseId(parser, scope);
-        default: break;
+        default: return initAST(AST::type::NO_OP);
     }
-
-    return initAST(AST::type::NO_OP);
 }
 
 
@@ -136,59 +134,59 @@ AST* parseTerm(Parser* parser, Scope* scope) {
     exit(-1);
 }
 
-AST* parseFunctionCall(Parser* parser, Scope* scope) {
+AST* parseFunctionCall(Parser* parser, Scope* current_scope) {
     AST* func_call = initAST(AST::type::AST_FUNCTION_CALL);
-    printf("***Parsing Function call...\n");
+    // printf("***Parsing Function call...\n");
 
     func_call->func_call_name = parser->previous_token->value;
     func_call->func_call_arguments = (AST**)calloc(1, sizeof(AST*));
+    func_call->func_call_arguments_count = 1;
+
+    // printf("Function call name: %s\n", func_call->func_call_name);
 
     parserEat(parser, Token::TokenType::OPEN_PARENTESIS);
 
-    AST* expression = parseExpresion(parser, scope);
+    AST* expression = parseExpresion(parser, current_scope);
+
 
     func_call->func_call_arguments[0] = expression;
-    func_call->func_call_arguments_count += 1;
-
 
     while(parser->current_token->token_type == Token::TokenType::COMMA) {
         parserEat(parser, Token::TokenType::COMMA);
 
-        AST* expression = parseExpresion(parser, scope);
+        AST* expression = parseExpresion(parser, current_scope);
         func_call->func_call_arguments_count += 1;
-        printf("    Function Argument:\n");
-        
         func_call->compound_value = (AST**)realloc(
             func_call->func_call_arguments,
-            func_call->func_call_arguments_count * sizeof(AST)
+            func_call->func_call_arguments_count * sizeof(AST*)
         );
-        printf("    Function Argument.\n");
-        
-        func_call->compound_value[ func_call->compound_size - 1] = expression;
-    } 
+    
 
+        func_call->func_call_arguments[func_call->func_call_arguments_count - 1] = expression;
+    }
+ 
     parserEat(parser, Token::TokenType::CLOSE_PARENTESIS);
 
     // func_call->scope = scope;
     func_call->scope = initScope();
-    printf("Function scope: %p\n", func_call->scope);
+    // printf("Function scope: %p\n", func_call->scope);
 
-    printf("***Parsed Function call!\n");
+    // printf("***Parsed Function call!\n");
     return func_call;
 }
 
 
 AST* parseString(Parser* parser, Scope* scope) {
-    printf("***Parsing String...\n");
+    // printf("***Parsing String...\n");
     AST* ast = initAST(AST::type::AST_STRING);
     ast->string_value = parser->current_token->value;
 
-    printf("String value: %s\n", ast->string_value);
+    // printf("String value: %s\n", ast->string_value);
 
     parserEat(parser, Token::TokenType::STRING);
     ast->scope = scope;
-    printf("String scope: %p\n", ast->scope);
-    printf("***Parsed String!\n");
+    // printf("String scope: %p\n", ast->scope);
+    // printf("***Parsed String!\n");
     return ast;
 }
 
@@ -200,25 +198,25 @@ AST* parseVariable(Parser* parser, Scope* scope) {
         return parseFunctionCall(parser, scope);
     }
 
-    printf("***Parsing Variable ...\n");
+    // printf("***Parsing Variable ...\n");
     AST* ast_var = initAST(AST::type::AST_VARIABLE);
     ast_var->var_name = parser->previous_token->value;
-    printf("Variable name: '%s'!\n", ast_var->var_name);
+    // printf("Variable name: '%s'!\n", ast_var->var_name);
     ast_var->scope = scope;
 
-    printf("Variable Scope: '%p'!\n", ast_var->scope);
-    printf("***Parsed Variable!\n");
+    // printf("Variable Scope: '%p'!\n", ast_var->scope);
+    // printf("***Parsed Variable!\n");
     return ast_var;
 }
 
 AST* parseVariableDefinition(Parser* parser, Scope* scope) {
-    printf("***Parsing Variable definition...\n");
+    // printf("***Parsing Variable definition...\n");
     parserEat(parser, Token::TokenType::ID); // var word
 
     char* var_name = parser->current_token->value;
     parserEat(parser, Token::TokenType::ID);
 
-    printf("Variable Name: %s\n", var_name);
+    // printf("Variable Name: %s\n", var_name);
 
     parserEat(parser, Token::TokenType::EQUALS);
 
@@ -231,19 +229,19 @@ AST* parseVariableDefinition(Parser* parser, Scope* scope) {
 
     var_def->scope = scope;
 
-    printf("Variable Scope: %p\n", scope);
+    // printf("Variable Scope: %p\n", scope);
 
-    printf("***Parsed Variable definition!\n");
+    // printf("***Parsed Variable definition!\n");
 
     return var_def;
 }
 
 
 AST* parseFunctionDefinition(Parser* parser, Scope* scope) {
-    printf("***Parsing Function definition...\n");
+    // printf("***Parsing Function definition...\n");
 
     AST* function_definition = initAST(AST::type::AST_FUNCTION_DEFINITION);
-    function_definition->scope = scope; // maybe a new scope will be appropriate
+    function_definition->scope = initScope(); // init function definition scope;
 
     parserEat(parser, Token::TokenType::ID); // function Keyword
 
@@ -254,13 +252,11 @@ AST* parseFunctionDefinition(Parser* parser, Scope* scope) {
     function_definition->func_definition_name[strlen(func_definition_name)] = '\0';
 
 
-
     parserEat(parser, Token::TokenType::ID); // function name
     parserEat(parser, Token::TokenType::OPEN_PARENTESIS); // (
     
     // Arguments
-    
-    AST* arg = parseVariable(parser, scope);
+    AST* arg = parseVariable(parser, function_definition->scope);
 
     function_definition->func_definition_arguments_count = 1;
     function_definition->func_definition_arguments = (AST**)calloc(
@@ -269,11 +265,10 @@ AST* parseFunctionDefinition(Parser* parser, Scope* scope) {
     );
 
     function_definition->func_definition_arguments[0] = arg;
-
     while (parser->current_token->token_type == Token::TokenType::COMMA) {
         parserEat(parser, Token::TokenType::COMMA);
 
-        AST* arg = parseVariable(parser, scope);
+        AST* arg = parseVariable(parser, function_definition->scope);
         
         function_definition->func_definition_arguments_count += 1;
 
@@ -288,12 +283,11 @@ AST* parseFunctionDefinition(Parser* parser, Scope* scope) {
 
     parserEat(parser, Token::TokenType::CLOSE_PARENTESIS); // )
     parserEat(parser, Token::TokenType::OPEN_BRACKET); // {
-    
     // Body
-    function_definition->func_definition_body = parseStatments(parser, scope);
+    function_definition->func_definition_body = parseStatments(parser, function_definition->scope);
 
     parserEat(parser, Token::TokenType::CLOSE_BRACKET); // }
 
-    printf("***Parsed Function definition!\n");
+    // printf("***Parsed Function definition!\n");
     return function_definition;
 }
