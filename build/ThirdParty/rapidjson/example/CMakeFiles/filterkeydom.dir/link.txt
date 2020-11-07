@@ -1,0 +1,1 @@
+/usr/bin/c++  -march=native -Wall -Wextra -Werror -pthread -O2 -g -DNDEBUG -rdynamic CMakeFiles/filterkeydom.dir/filterkeydom/filterkeydom.cpp.o -o ../../../bin/filterkeydom 

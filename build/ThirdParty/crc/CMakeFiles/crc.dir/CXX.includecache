@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc16.h
+stdint.h
+-
+
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc32.h
+stdint.h
+-
+
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc64.h
+stdint.h
+-
+
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crchash.cpp
+crchash.h
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crchash.h
+crc16.h
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc16.h
+crc32.h
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc32.h
+crc64.h
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crc64.h
+
+/home/marcos/workspace/azgard/ThirdParty/crc/crc/crchash.h
+string
+-
+stdint.h
+-
+

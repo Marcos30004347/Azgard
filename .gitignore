@@ -1,5 +1,5 @@
 .vscode
-build/
+./build/
 Tracy-release
 _obsolete/
 Tests/
