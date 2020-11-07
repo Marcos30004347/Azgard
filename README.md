@@ -65,10 +65,20 @@ All major consoles provide native SDKs writen in C++ and it is the more commom l
 
 Libraries and Dependencies: Take cara when choosing to use some library as dependence, desirably it should be cross platform and have support for webassembly. 
 
+#### Build
+We use CMake as default build system.
+compile structions:
+
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ make
+
 #### Options:
     AZGARD_DEBUG_BUILD - Compile azgard as debug build (default ON)
     AZGARD_SHARED_LIB_BUILD - Compile azgard as a shared lib (default OFF).
     AZGARD_USE_STANDART_MATH - Uses standart math library implementation as backend for our math library (default ON)
+
 #### Systems:
 1. MemoryMamanger:
     * Desciption: Responsable for managing memory, objects should be allocated from a defined pool or a global pool of the manager.
