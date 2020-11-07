@@ -1,5 +1,5 @@
 #include "TimeManager.hpp"
-#include "Library/Thread.hpp"
+#include "Core/Thread.hpp"
 
 #include <chrono>
 #include <iostream>

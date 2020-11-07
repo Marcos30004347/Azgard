@@ -1,7 +1,7 @@
 #ifndef JOBIN_RING_BUFFER_H
 #define JOBIN_RING_BUFFER_H
 
-#include "Library/SpinLock.hpp"
+#include "SpinLock.hpp"
 
 namespace Azgard {
 

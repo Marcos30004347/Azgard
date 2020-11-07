@@ -1,7 +1,7 @@
 #ifndef AZGARD_PLATFORM_MANAGER
 #define AZGARD_PLATFORM_MANAGER
 
-#include "Library/Singleton.hpp"
+#include "Core/Singleton.hpp"
 
 using namespace Azgard;
 

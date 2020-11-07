@@ -2,7 +2,7 @@
 #define AZGARD_LIBRARY_MANAGER
 
 #include "Core/Engine.hpp"
-#include "Singleton.hpp"
+#include "Core/Singleton.hpp"
 
 namespace Azgard {
 

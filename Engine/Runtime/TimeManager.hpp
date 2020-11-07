@@ -2,7 +2,7 @@
 #define AZGARD_LIB_TIME_MANGAER
 
 #include "Core/Engine.hpp"
-#include "Library/Singleton.hpp"
+#include "Core/Singleton.hpp"
 
 namespace Azgard {
 

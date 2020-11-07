@@ -2,9 +2,9 @@
 #define AZGARD_LOGGER
 
 // #include "Library/SpinLock.hpp"
-#include "Library/Concurrent/ConcurrentQueue.hpp"
-#include "Library/Thread.hpp"
-#include "Library/Singleton.hpp"
+#include "Core/ConcurrentQueue.hpp"
+#include "Core/Thread.hpp"
+#include "Core/Singleton.hpp"
 
 namespace Azgard {
 

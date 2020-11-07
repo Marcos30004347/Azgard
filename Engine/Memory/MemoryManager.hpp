@@ -1,8 +1,9 @@
 #ifndef AZGARD_MEMORY_MANAGER
 #define AZGARD_MEMORY_MANAGER
 
+#include "Core/Singleton.hpp"
+
 #include "Memory.hpp"
-#include "Library/Singleton.hpp"
 
 namespace Azgard {
 class MemoryManager: public Singleton<MemoryManager> {

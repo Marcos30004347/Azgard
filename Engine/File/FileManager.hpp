@@ -9,12 +9,13 @@
 
 #include "Core/Engine.hpp"
 
-#include "Library/Concurrent/ConcurrentQueue.hpp"
-#include "Library/Thread.hpp"
-#include "Library/SpinLock.hpp"
+#include "Core/ConcurrentQueue.hpp"
+#include "Core/Thread.hpp"
+#include "Core/SpinLock.hpp"
+#include "Core/Singleton.hpp"
+
 #include "Library/Name.hpp"
 #include "Library/String.hpp"
-#include "Library/Singleton.hpp"
 
 #include "FileHandle.hpp"
 

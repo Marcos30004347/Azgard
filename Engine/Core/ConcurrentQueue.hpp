@@ -1,10 +1,12 @@
 #ifndef AZGARD_LIB_ASYNC_LINKED_LIST
 #define AZGARD_LIB_ASYNC_LINKED_LIST
 
-#include "Core/Engine.hpp"
+// Core
+#include "Engine.hpp"
+#include "SpinLock.hpp"
+
+// Memory
 #include "Memory/MemoryManager.hpp"
-#include "Library/SpinLock.hpp"
-// #include<iostream>
 
 namespace Azgard {
 

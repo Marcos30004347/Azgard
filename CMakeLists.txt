@@ -53,6 +53,9 @@ add_library(azgard ${AZGARD_LIB_TYPE}
 #Core
 Engine/Core/Assert.cpp
 Engine/Core/Math.cpp
+Engine/Core/SpinLock.cpp
+Engine/Core/Window.cpp
+Engine/Core/Thread.cpp
 
 #Runtime
 Engine/Runtime/Engine.cpp
@@ -63,12 +66,9 @@ Engine/Debug/Debugger.cpp
 Engine/Debug/Logger.cpp
 
 #Library
-Engine/Library/LibraryManager.cpp
-Engine/Library/SpinLock.cpp
-Engine/Library/Window.cpp
 Engine/Library/Name.cpp
 Engine/Library/String.cpp
-Engine/Library/Thread.cpp
+Engine/Library/LibraryManager.cpp
 
 #File
 Engine/File/FileManager.cpp
@@ -87,11 +87,6 @@ Engine/Memory/MemoryManager.cpp
 Engine/Event/EventManager.cpp
 
 #Renderer
-Engine/Renderer/Shader/AST.cpp
-Engine/Renderer/Shader/Lexer.cpp
-Engine/Renderer/Shader/Parser.cpp
-Engine/Renderer/Shader/Visitor.cpp
-Engine/Renderer/Shader/Scope.cpp
 )
 
 # Public include directories

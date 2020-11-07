@@ -1,9 +1,9 @@
 #ifndef AZGARD_EVENT_MANAGER
 #define AZGARD_EVENT_MANAGER
 
-#include "Library/Concurrent/ConcurrentVector.hpp"
-#include "Library/Singleton.hpp"
-#include "Library/Thread.hpp"
+#include "Core/ConcurrentVector.hpp"
+#include "Core/Singleton.hpp"
+#include "Core/Thread.hpp"
 #include "Input/KeyCode.hpp"
 
 namespace Azgard {

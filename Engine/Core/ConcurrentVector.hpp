@@ -1,10 +1,9 @@
 #ifndef AZGARD_LIB_ASYNC_VECTOR
 #define AZGARD_LIB_ASYNC_VECTOR
 
-#include "Core/Engine.hpp"
-#include "Core/Math.hpp"
-
-#include "Library/SpinLock.hpp"
+#include "SpinLock.hpp"
+#include "Engine.hpp"
+#include "Math.hpp"
 
 
 // #include<iostream>
