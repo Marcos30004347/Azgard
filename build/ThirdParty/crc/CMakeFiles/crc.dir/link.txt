@@ -1,2 +1,0 @@
-/usr/bin/ar qc libcrc.a CMakeFiles/crc.dir/crc/crc16.c.o CMakeFiles/crc.dir/crc/crc32.c.o CMakeFiles/crc.dir/crc/crc64.c.o CMakeFiles/crc.dir/crc/crchash.cpp.o
-/usr/bin/ranlib libcrc.a

@@ -1,5 +1,7 @@
 .vscode
-./build/
+build/
+!ThirdParty/**
+
 Tracy-release
 _obsolete/
 Tests/

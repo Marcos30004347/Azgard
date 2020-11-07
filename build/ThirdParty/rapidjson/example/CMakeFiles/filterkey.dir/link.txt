@@ -1,1 +1,0 @@
-/usr/bin/c++  -march=native -Wall -Wextra -Werror -pthread -O2 -g -DNDEBUG -rdynamic CMakeFiles/filterkey.dir/filterkey/filterkey.cpp.o -o ../../../bin/filterkey 

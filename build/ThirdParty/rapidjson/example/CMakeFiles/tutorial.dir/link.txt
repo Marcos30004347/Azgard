@@ -1,1 +1,0 @@
-/usr/bin/c++  -march=native -Wall -Wextra -Werror -pthread -O2 -g -DNDEBUG -rdynamic CMakeFiles/tutorial.dir/tutorial/tutorial.cpp.o -o ../../../bin/tutorial 
