@@ -13,8 +13,7 @@ inline float fmaf(float a, float b, float c) {
   #endif
 }
 
-float log2(float x)
-{
+float log2(float x) {
   #ifdef AZGARD_USE_STANDART_MATH
   return std::log(x);
   #else

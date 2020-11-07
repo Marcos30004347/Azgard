@@ -40,6 +40,7 @@ public:
 
 };
 
+
 template<typename EventData>
 ConcurrentVector<EventCallback> Event<EventData>::callbacks;
 

@@ -49,8 +49,6 @@ void Azgard::Engine::shutDown() {
 
     #ifdef AZGARD_DEBUG_BUILD
     Logger::shutDown();
-    #endif
-    #ifdef AZGARD_DEBUG_BUILD
     Azgard::dumpMemory();
     #endif
 }

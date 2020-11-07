@@ -15,6 +15,7 @@ public:
     }
 };
 
+
 template<typename T>
 T* Singleton<T>::gInstancePtr = nullptr;
 

@@ -74,7 +74,6 @@ public:
     JsonValue operator[](int key);
     void save(FileHandle handle);
 };
-
 }
 
 #endif

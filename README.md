@@ -58,7 +58,8 @@ Ideia for client code:
 3. MacOS
 4. Android
 5. IOS
-
+6. Browsers 
+   
 support for consoles (Playstation/Xbox/Switch) are desirably.
 
 All major consoles provide native SDKs writen in C++ and it is the more commom language in game engine development. But take care with the use of libraries and the std libraries, some systems support just a subset of it, like android for instance with the android Native Development Kit(https://developer.android.com/ndk), there is no problem in using it, but if some platform dont give support we will need to add one ourselves, also, some features of recent c++ versions maybe not be supported, try to limit the language features to C++11 that is the last c++ version that feel like C++ anyways.
@@ -116,3 +117,4 @@ a. Implementation should follow parrallel and data oriented design.
 b. Initiall API will be GLES3/Opengl3
 3. EventManager - Make it work.
 4. NetworkManager - Everything, take a look at asio for that
+5. Add EntityComponentSystem (https://github.com/skypjack/entt)
