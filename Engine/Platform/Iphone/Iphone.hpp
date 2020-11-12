@@ -2,3 +2,12 @@
  * Iphone configuration macros
  */
 #define AZGARD_IOS_PLATFORM 1
+
+#define THREAD_PTHREAD_BACKEND
+#define POSIX_PLATFORM
+
+#if TARGET_IPHONE_SIMULATOR
+    #define FIBER_FCONTEXT_BACKEND
+#elif TARGET_OS_IPHONE
+    #define FIBER_FCONTEXT_BACKEND
+#endif

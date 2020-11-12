@@ -13,20 +13,24 @@
  */
 
 #if __EMSCRIPTEN__
-#include"./Browser/Browser.hpp"
+    #include"./Browser/Browser.hpp"
 #elif __ANDROID__
-#include"./Android/Android.hpp"
-#elif __linux__
-#include"./Linux/Linux.hpp"
+    #include"./Android/Android.hpp"
+#elif defined(__linux__) && !defined(__ANDROID__)
+    #include"./Linux/Linux.hpp"
 #elif __APPLE__
     #include <TargetConditionals.h>
     #if TARGET_OS_IPHONE
     #include"./Iphone/Iphone.hpp"
     #elif TARGET_OS_MAC
     #include"./Mac/Mac.hpp"
+    #elif
+    #error "Unknown Apple Platform"
 #endif
-#elif __WIN32__
-#include"./Windows/Windows.hpp"
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+    #include"./Windows/Windows.hpp"
+#elif __unix__
+    #include "./Unix/Unix.hpp"
 #endif
 
 #endif
