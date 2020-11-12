@@ -1,6 +1,5 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 ##
-## Copyright (C) 2008-2019, Nigel Stewart <nigels[]users sourceforge net>
 ## Copyright (C) 2002-2008, Marcelo E. Magallon <mmagallo[]debian org>
 ## Copyright (C) 2002-2008, Milan Ikits <milan ikits[]ieee org>
 ##
@@ -10,7 +9,6 @@
 
 use strict;
 use warnings;
-use File::Basename;
 
 use lib '.';
 do 'bin/make.pl';
@@ -29,7 +27,7 @@ if (@ARGV)
 {
 	@extlist = @ARGV;
 
-	foreach my $ext (sort { basename($a) cmp basename($b) } @extlist)
+	foreach my $ext (sort @extlist)
 	{
 		my ($extname, $exturl, $extstring, $reuse, $types, $tokens, $functions, $exacts) = 
 			parse_ext($ext);
