@@ -110,7 +110,7 @@ void initFiber(Fiber* fib, void(*handle)(void*), void* args) {
     createFiberStack(fib);
 
     #ifdef FIBER_FCONTEXT_BACKEND
-    fib->ctx = make_fcontext(fib->stack.sptr, fib->stack.ssize, fiber_entry);
+    fib->ctx = make_fcontext(fib->stack.sptr, fib->stack.ssize, fiberEntry);
      #elif FIBER_WINDOWS_BACKEND
     fib->ctx = CreateFiber(stack_s, stack, fib);
     #elif FIBER_EMSCRIPTEN_BACKEND

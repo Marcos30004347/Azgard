@@ -6,4 +6,4 @@ Tracy-release
 _obsolete/
 Tests/
 
-ThirdParty/
+ThirdParty/*/

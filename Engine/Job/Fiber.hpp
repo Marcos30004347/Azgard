@@ -1,6 +1,7 @@
 #ifndef JOBIN_FIBER_H
 #define JOBIN_FIBER_H
 
+#include "Core/Engine.hpp"
 
 #ifdef FIBER_FCONTEXT_BACKEND
 #include "fcontext/fcontext.h"
