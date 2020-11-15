@@ -2,6 +2,7 @@
 #define JOBIN_FIBER_H
 
 #include "Core/Engine.hpp"
+#include "Core/Atomic.hpp"
 
 #ifdef FIBER_FCONTEXT_BACKEND
 #include "fcontext/fcontext.h"
@@ -14,12 +15,15 @@
 #include <emscripten/fiber.h>
 #elif FIBER_CROSS_BACKEND
 #include "cross-fiber/cross-fiber.hpp"
-#include "atomic.hpp"
+
+
 using cross_fiber = fiber_t;
 #endif
 
+namespace Azgard {
+
 #ifdef FIBER_CROSS_BACKEND
-static atomic<fiber_t*> primary {nullptr};
+static Atomic<fiber_t*> primary {nullptr};
 #endif
 
 class Fiber;
@@ -97,5 +101,6 @@ void convertThreadToFiber(Fiber* fib, void(*handle)(void*), void* arg);
 Fiber* getCurrentFiber();
 void destroyFiber(Fiber* fib);
 
+}
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "Promise.hpp"
 
+namespace Azgard {
+
 /*
 template params:
     Ret: return type
@@ -52,5 +54,7 @@ public:
         p->isResolved = true;
     }
 };
+
+}
 
 #endif

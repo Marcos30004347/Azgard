@@ -5,6 +5,8 @@
 #include "Fiber.hpp"
 #include <stdio.h>
 
+namespace Azgard {
+
 template<unsigned int size = 256>
 class AvaliableIndicesStack {
 
@@ -71,5 +73,6 @@ Fiber* FiberPoolFixed<size>::request() {
     return buff + id;
 }
 
+}
 
 #endif

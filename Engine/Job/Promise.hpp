@@ -4,6 +4,8 @@
 #include <tuple>
 #include <type_traits>
 
+namespace Azgard {
+
 extern void currentJobYield();
 template <typename T> struct trait {
     typedef T type;
@@ -52,5 +54,7 @@ public:
         while(!this->isResolved) currentJobYield();
     }
 };
+
+}
 
 #endif

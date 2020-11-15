@@ -3,6 +3,8 @@
 
 #include<tuple>
 
+namespace Azgard {
+
 /*
 template params:
     Ret: return type
@@ -35,6 +37,8 @@ public:
 template< typename Fn, typename ... Args >
 void invoke( Fn && fn, Args && ... args) {
     std::forward< Fn >( fn)( std::forward< Args >( args) ... );
+}
+
 }
 
 #endif

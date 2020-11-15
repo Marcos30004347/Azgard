@@ -2,6 +2,8 @@
 
 #include "Fiber.hpp"
 
+namespace Azgard {
+
 #ifdef FIBER_FCONTEXT_BACKEND
 
 void fiberEntry(fcontext_transfer_t caller) {
@@ -104,7 +106,7 @@ void destroyFiberStack(Fiber* fib) {
 }
 
 void initFiber(Fiber* fib, void(*handle)(void*), void* args) {
-    if (!currentFiber) abort();
+    if (!currentFiber) std::abort();
     fib->args = args;
     fib->handle = handle;
     createFiberStack(fib);
@@ -134,7 +136,7 @@ Fiber* createFiber() {
 }
 
 void resetFiber(Fiber* fib, void(*handle)(void*), void* args) {
-    if(!currentFiber) abort();
+    if(!currentFiber) std::abort();
     
     #ifdef FIBER_FCONTEXT_BACKEND
     if(!fib->stack.ssize) createFiberStack(fib);
@@ -219,3 +221,4 @@ void destroyFiber(Fiber* fib) {
     #endif
 }
 
+}
