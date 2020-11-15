@@ -105,6 +105,10 @@ Engine/Event/EventManager.cpp
 
 #Job
 Engine/Job/Fiber.cpp
+Engine/Job/Job.cpp
+Engine/Job/JobManager.cpp
+Engine/Job/JobQueues.cpp
+Engine/Job/Worker.cpp
 
 #Renderer
 )
