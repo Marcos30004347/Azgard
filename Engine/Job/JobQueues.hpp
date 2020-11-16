@@ -12,8 +12,8 @@ class JobQueues {
     ~JobQueues();
     bool enqueue(Job* const &j);
     bool dequeue(Job* &j);
-    };
 
+};
 
 }
 
